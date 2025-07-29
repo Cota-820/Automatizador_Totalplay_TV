@@ -1,100 +1,86 @@
 #include "config.h"
 #include "IR.h"
-#include <IRremote.h>
 #include "display.h"
+#include "local_time.h"
+#include <IRremote.h>
 #include "string.h"
-
-#define LED_IR_PIN 15
-#define BUTTON_PIN 0
-#define BUILD_IN_LED 2
 
 enum estado{
   STATE_COUNTDOWN,
   STATE_SEND,
 };
 
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
-
-int seconds;
-uint8_t currentButtonState, lastButtonState = HIGH, state = 0;
+uint32_t seconds;
+uint16_t secondsCountdown;
+uint8_t currentButtonState, lastButtonState = HIGH, state = STATE_COUNTDOWN, day, lastDay;
 unsigned long currentMillis, lastMillis = 0;
 char screenText[128] = {0}; 
 
 void setup() {
   Serial.begin(115200);
 
+  initTime();
+
   pinMode(BUILD_IN_LED, OUTPUT);
-
-  if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)) {
-    digitalWrite(BUILD_IN_LED, HIGH);
-    Serial.println(F("Error al inicializar la pantalla"));
-    while (true); //stop program
-  }
-
-  showTextOnScreen(display, "Iniciando...", 1);  
-
   pinMode(LED_IR_PIN, OUTPUT);
-  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  pinMode(BUTTON_SEND_PIN, INPUT_PULLUP);
 
-  resetSeconds(&seconds);
-  state = STATE_COUNTDOWN;
+  initDisplay(BUILD_IN_LED);  
 
   IrSender.begin(LED_IR_PIN);
 
-  delay(1000);
+  state = STATE_SEND;
+
+  delay(1000); //TEMP
 }
 
 void loop() {
   currentMillis = millis();
-  currentButtonState = digitalRead(BUTTON_PIN);
+  currentButtonState = digitalRead(BUTTON_SEND_PIN);
 
-
-  //check button
+  //revisar boton
   if (currentButtonState == LOW && lastButtonState == HIGH)
     state = STATE_SEND;
 
   switch(state){
     case STATE_COUNTDOWN:
-      //show every second
+      //actualizar pantalla cada segundo
       if (currentMillis - lastMillis >= 1000) {
         lastMillis = currentMillis;
 
-        seconds--;
-
+        secondsCountdown = getSecondsCountdown();
+        seconds = getSeconds();
+        day = getDay();
         
-        if(seconds != 0)
-          showTimeOnScreen(display, seconds);
+        if(secondsCountdown != 0 && day==lastDay)
+          showTimeOnScreen(secondsCountdown, seconds, day);
         else
           state = STATE_SEND;
-        
+
+        lastDay = day;
       }
       break;
 
     case STATE_SEND:
       stopSuspension();
-      resetSeconds(&seconds);
+      resetCountdown();
       state = STATE_COUNTDOWN;
       break;
   }
 
   lastButtonState = currentButtonState;
-  delay(10);
 }
 
 void stopSuspension(){
-  for(int i=0; i<2 ; i++){
+  for(int i=0; i<2 ; i++){ //WIP change ok for channel num 
     sendSignal(ADDRESS, BACK_CMMD, BACK_CMMD_NAME, 1000);
     sendSignal(ADDRESS, OK_CMMD, OK_CMMD_NAME, 1000);
   }
 }
 
-void sendSignal(uint16_t address, uint8_t command, char *signalName, int timeToWait){
+void sendSignal(uint16_t address, uint8_t command, char *signalName, int msToWait){
   sprintf(screenText, "Enviado, espera... \n\nBoton: %s", signalName);
-  showTextOnScreen(display, screenText, 1);
+  showTextOnScreen(screenText, 1);
   IrSender.sendNEC(ADDRESS, OK_CMMD, 0);
-  delay(timeToWait);
-}
-
-void resetSeconds(int *seconds){
-  *seconds = (HORAS_A_ENVIAR * 3600) + (MINUTOS_A_ENVIAR * 60) + SEGUNDOS_A_ENVIAR;
+  vTaskDelay(pdMS_TO_TICKS(msToWait));
 }

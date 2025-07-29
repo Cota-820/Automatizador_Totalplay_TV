@@ -1,8 +1,11 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define SEGUNDOS_A_ENVIAR 300
-#define MINUTOS_A_ENVIAR 0
-#define HORAS_A_ENVIAR 3
+#define LED_IR_PIN 15
+#define BUILD_IN_LED 2
+#define BUTTON_SEND_PIN 0
+#define BUTTON_MENU_PIN 1 //WIP
+#define BUTTON_LEFT_PIN 2 //WIP
+#define BUTTON_RIGHT_PIN 3 //WIP
 
 #endif
