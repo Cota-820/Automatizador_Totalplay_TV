@@ -2,6 +2,7 @@
 #include "IR.h"
 #include "display.h"
 #include "local_time.h"
+#include "buttons.h"
 #include <IRremote.h>
 #include "string.h"
 
@@ -24,12 +25,7 @@ char* menuTextArray[] = {"Cambiar dia y hora", "Cambiar canales", "Cambiar tiemp
 
 uint32_t seconds;
 uint16_t secondsCountdown;
-uint8_t sendBttState, sendOldBttState = HIGH, 
-  middleBttState, middleOldBttState = HIGH,
-  leftBttState, leftOldBttState = HIGH,
-  rightBttState, rightOldBttState = HIGH;
 uint8_t state = STATE_COUNTDOWN, menuOption, day, lastDay;
-//bool menuDisplayed = false;
 unsigned long currentMillis, lastMillisCountdown = 0, lastMillisMenu = 0;
 char screenText[128] = {0}; 
 
@@ -40,10 +36,8 @@ void setup() {
 
   pinMode(BUILD_IN_LED, OUTPUT);
   pinMode(LED_IR_PIN, OUTPUT);
-  pinMode(BUTTON_SEND_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_MIDDLE_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_LEFT_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_RIGHT_PIN, INPUT_PULLUP);
+  
+  initButtonPins();
 
   initDisplay(BUILD_IN_LED);  
 
@@ -57,18 +51,13 @@ void setup() {
 void loop() {
   currentMillis = millis();
 
-  sendBttState = digitalRead(BUTTON_SEND_PIN);
-  middleBttState = digitalRead(BUTTON_MIDDLE_PIN);
-  leftBttState = digitalRead(BUTTON_LEFT_PIN);
-  rightBttState = digitalRead(BUTTON_RIGHT_PIN);
-
-  if (sendBttState == LOW && sendOldBttState == HIGH)
+  if (wasPressed(btnSend))
     state = STATE_SEND;
 
   switch(state){
     case STATE_COUNTDOWN:
       //cambiar a menu si se presiono boton
-      if (middleBttState == LOW && middleOldBttState == HIGH)
+      if (wasPressed(btnMiddle))
         state = STATE_MENU_START;
 
       //actualizar pantalla cada segundo
@@ -100,26 +89,20 @@ void loop() {
       state = STATE_MENU;
       break;
     case STATE_MENU:
-      if (middleBttState == LOW && middleOldBttState == HIGH)
+      if (wasPressed(btnMiddle))
         state = STATE_COUNTDOWN;
-      else if (leftBttState == LOW && leftOldBttState == HIGH) {
+      else if (wasPressed(btnLeft)){
         menuOption = (menuOption - 1 + MENU_COUNT) % MENU_COUNT;
         showMenuOnScreen(menuTextArray[menuOption]);
       }
-      else if (rightBttState == LOW && rightOldBttState == HIGH){
+      else if (wasPressed(btnRight)){
         menuOption = (menuOption + 1) % MENU_COUNT;
         showMenuOnScreen(menuTextArray[menuOption]);
       }
       break;
   }
 
-  sendOldBttState = sendBttState;
-  middleOldBttState = middleBttState;
-  leftBttState = leftOldBttState;
-  rightBttState = rightOldBttState;
-  
-  //evitar rebote de boton
-  vTaskDelay(pdMS_TO_TICKS(25));
+  updateButtons();
 }
 
 void stopSuspension(){
