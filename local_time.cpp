@@ -34,8 +34,6 @@ void timerTask(void *parameter) {
 
       if(secondsCountdown != 0)
         secondsCountdown--;
-      else
-        secondsCountdown == maxCountdown;
 
       xSemaphoreGive(secondsMutex);
     }

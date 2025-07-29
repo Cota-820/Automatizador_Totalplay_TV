@@ -8,6 +8,8 @@ void initDisplay(uint8_t warningLed){
     Serial.println(F("Error al inicializar la pantalla"));
     while (true); //stop program
   }
+  
+  display.setTextSize(1);
 
   showTextOnScreen("Iniciando...", 1);
 }
@@ -16,7 +18,6 @@ void showTimeOnScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day){
   if (secondsCountdown < 0) secondsCountdown = 0;
 
   display.clearDisplay();
-  display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
 
   display.setCursor(0, ROW_1);
@@ -70,11 +71,28 @@ void showTimeOnScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day){
   display.display();
 }
 
+void showMenuOnScreen(char* menuText){
+  display.clearDisplay();
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, ROW_3);
+  display.print(menuText);
+  
+  display.setCursor(0, ROW_8);
+  display.print("<--");
+
+  display.setCursor(50, ROW_8);
+  display.print("Elegir");
+
+  display.setCursor(113, ROW_8);
+  display.print("-->");
+
+  display.display();
+}
+
 void showTextOnScreen(char *str, int size){
   display.clearDisplay();
-  display.setCursor(0, 0);
-  display.setTextSize(size);
   display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
   display.print(str);
   display.display();
 }

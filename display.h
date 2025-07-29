@@ -23,6 +23,7 @@
 
 void initDisplay(uint8_t warningLed);
 void showTimeOnScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day);
+void showMenuOnScreen(char* menuText);
 void showTextOnScreen(char *str, int size);
 
 #endif
