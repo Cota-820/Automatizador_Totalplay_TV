@@ -6,6 +6,9 @@
 #include <IRremote.h>
 #include "string.h"
 
+#define COUNTDOWN_MS_TO_WAIT 1000
+#define MENU_MS_TO_WAIT 60000
+
 enum state{
   STATE_COUNTDOWN,
   STATE_SEND,
@@ -20,6 +23,7 @@ enum menuOptions{
   EXIT,
   MENU_COUNT,
 };
+
 
 char* menuTextArray[] = {"Cambiar dia y hora", "Cambiar canales", "Cambiar tiempo de envio", "Salir"};
 
@@ -61,7 +65,7 @@ void loop() {
         state = STATE_MENU_START;
 
       //actualizar pantalla cada segundo
-      if (currentMillis - lastMillisCountdown >= 1000) {
+      if (currentMillis - lastMillisCountdown >= COUNTDOWN_MS_TO_WAIT) {
         lastMillisCountdown = currentMillis;
 
         secondsCountdown = getSecondsCountdown();
@@ -99,6 +103,9 @@ void loop() {
         menuOption = (menuOption + 1) % MENU_COUNT;
         showMenuOnScreen(menuTextArray[menuOption]);
       }
+
+      if (currentMillis - lastMillisCountdown >= MENU_MS_TO_WAIT)
+        STATE = STATE_COUNTDOWN
       break;
   }
 
