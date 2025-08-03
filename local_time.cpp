@@ -3,6 +3,8 @@
 TaskHandle_t timerTaskHandle = NULL;
 SemaphoreHandle_t secondsMutex;
 
+char daysOfWeek[7] = {"Lnues", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"};
+
 static uint8_t day = MONDAY; //WIP
 static uint32_t seconds = 0; //WIP
 static uint16_t secondsCountdown = 14400; //WIP

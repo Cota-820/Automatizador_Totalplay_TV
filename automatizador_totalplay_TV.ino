@@ -17,6 +17,7 @@ enum state{
 };
 
 uint8_t state = STATE_COUNTDOWN, lastDay;
+bool menuInitialized = false;
 unsigned long currentMillis, lastMillisCountdown = 0, lastMillisMenu = 0;
 char screenText[128] = {0}; 
 
@@ -44,6 +45,7 @@ void loop() {
 
   if (wasPressed(btnSend))
     state = STATE_SEND;
+    menuInitialized = false;
 
   switch(state){
     case STATE_COUNTDOWN:
@@ -75,13 +77,18 @@ void loop() {
       state = STATE_COUNTDOWN;
       break;
     case STATE_MENU:
+      if(!menuInitialized){
+        restartMenu();
+        menuInitialized = true;
+      }
+
       uint8_t menuExitFlag = updateMenu(wasPressed(btnMiddle), wasPressed(btnLeft), wasPressed(btnRight));
 
       //accion a realizar dependiendo de bandera de salida
       switch (menuExitFlag){
         case NO_CHANGE:
           if (currentMillis - lastMillisMenu >= MENU_MS_TO_WAIT){
-            restartMenu();
+            menuInitialized = false;
             STATE = STATE_COUNTDOWN;
           }
           break;
@@ -89,9 +96,11 @@ void loop() {
           lastMillisMenu = currentMillis;
           break;
         case EXIT_SEND_SIGNAL:
+          menuInitialized = false;
           STATE = STATE_SEND;
           break;
         case EXIT_COUNTDOWN:
+          menuInitialized = false;
           STATE = STATE_COUNTDOWN;
           break;
       }
@@ -111,7 +120,7 @@ void stopSuspension(){
 
 void sendSignal(uint16_t address, uint8_t command, char *signalName, int msToWait){
   sprintf(screenText, "Enviado, espera... \n\nBoton: %s", signalName);
-  showTextOnScreen(screenText, 1);
+  showTextOnScreen(screenText);
   IrSender.sendNEC(ADDRESS, OK_CMMD, 0);
   vTaskDelay(pdMS_TO_TICKS(msToWait));
 }

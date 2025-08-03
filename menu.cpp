@@ -1,7 +1,4 @@
 #include "menu.h"
-#include "display.h"
-#include "buttons.h"
-#include "local_time.h"
 
 enum exitFlags{
   NO_CHANGE,
@@ -38,10 +35,10 @@ typedef struct MenuItem {
     struct MenuItem* rightMenu;
 } MenuItem;
 
-MenuItem menuDayHour_1 = {"Cambiar dia y hora", MENU_1, LAYER_1, 0, NULL, NULL, NULL, NULL};
-MenuItem menuChannel_2 = {"Cambiar canales", MENU_2, LAYER_1, 0, NULL, NULL, NULL, NULL};
-MenuItem menuSendTime_3 = {"Cambiar tiempo de envio", MENU_3, LAYER_1, 0, NULL, NULL, NULL, NULL};
-MenuItem menuExit_4 = {"Salir", MENU_4, LAYER_1, 0, NULL, NULL, NULL, NULL};
+MenuItem menuDayHour_1 = {"\n\n1. Cambiar dia y hora", MENU_1, LAYER_1, 0, NULL, NULL, NULL, NULL};
+MenuItem menuChannel_2 = {"\n\n2. Cambiar canales", MENU_2, LAYER_1, 0, NULL, NULL, NULL, NULL};
+MenuItem menuSendTime_3 = {"\n\n3. Cambiar tiempo de envio", MENU_3, LAYER_1, 0, NULL, NULL, NULL, NULL};
+MenuItem menuExit_4 = {"\n\n4. Salir", MENU_4, LAYER_1, 0, NULL, NULL, NULL, NULL};
 MenuItem menuDayHour_1_1 = {NULL, MENU_1_1, LAYER_2, 0, NULL, NULL, NULL, NULL};
 MenuItem menuChannel_2_1 = {NULL, MENU_2_1, LAYER_2, 0, NULL, NULL, NULL, NULL};
 MenuItem menuChannel_2_2 = {NULL, MENU_2_2, LAYER_3, 0, NULL, NULL, NULL, NULL};
@@ -50,6 +47,8 @@ MenuItem menuSendTime_3_1 = {NULL, MENU_3_1, LAYER_2, 0, NULL, NULL, NULL, NULL}
 MenuItem* currentMenu = NULL;
 static bool menuShowed = false, optionSelected = false;
 static unsigned long lastMillis = 0;
+uint8_t localDay;
+uint32_t localSeconds;
 
 void initMenu(){
   menuDayHour_1->leftMenu = menuExit_4;
@@ -81,7 +80,7 @@ uint8_t updateMenu(bool middleBtn, bool leftBtn, bool rightBtn){
   //mostrar menu si fue reiniciado
   if(currentMenu == NULL){
     currentMenu = menuDayHour_1;
-    showMenuOnScreen(currentMenu->title);
+    showTextOnScreen(currentMenu->title);
     return UPDATED_SCREEN;
   }
 
@@ -94,20 +93,23 @@ uint8_t updateMenu(bool middleBtn, bool leftBtn, bool rightBtn){
     case LAYER_1:
       if (wasPressed(btnLeft)){
         current_menu = current_menu->leftMenu;
-        showMenuOnScreen(currentMenu->title);
+        showTextOnScreen(currentMenu->title);
         return UPDATED_SCREEN;
       }
 
       else if (wasPressed(btnRight)){
         current_menu = current_menu->rightMenu;
-        showMenuOnScreen(currentMenu->title);
+        showTextOnScreen(currentMenu->title);
         return UPDATED_SCREEN;
       }
 
       else if (wasPressed(btnMiddle)){
+        if (current_menu->id == MENU_4)
+          return EXIT_COUNTDOWN;
+
         current_menu = current_menu->childrenMenu;
         current_menu->selectedItem = 0;
-        //show child
+        showChild(current_menu->id);
 
         lastMillis = millis();
         return UPDATED_SCREEN;
@@ -131,6 +133,49 @@ uint8_t updateMenu(bool middleBtn, bool leftBtn, bool rightBtn){
         //
       }
       break;
+  }
+}
+
+void showChild(uint8_t childId){
+  //
+
+  switch(childId){
+    case MENU_1_1:
+      localDay = getDay();
+      localSeconds = getSeconds();
+
+      uint8_t hours = localSeconds / 3600;
+      uint8_t minutes = (localSeconds % 3600) / 60;
+      uint8_t remainingSeconds = localSeconds % 60;
+
+      char buffer[50], temp[20];
+
+      sprintf(buffer, "   ");
+
+      if(hours <= 9)
+        sprintf(temp, "0%d:", hours);
+      else 
+        sprintf(temp, "%d:", hours);
+      strcat(buffer, temp);
+
+      if(minutes <= 9)
+        sprintf(temp, "0%d:", minutes);
+      else 
+        sprintf(temp, "%d:", minutes);
+      strcat(buffer, temp);
+
+      if(remainingSeconds <= 9)
+        sprintf(temp, "0%d  %s", remainingSeconds);
+      else 
+        sprintf(temp, "%d  %s", remainingSeconds);
+      strcat(buffer, temp);
+
+
+      showTextOnScreen();
+
+      break;
+    default:
+      showTextOnScreen("error: invalid");
   }
 }
 

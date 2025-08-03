@@ -21,29 +21,8 @@ void showTimeOnScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day){
   display.setTextColor(SSD1306_WHITE);
 
   display.setCursor(0, ROW_1);
-  switch(day){
-    case MONDAY:
-      display.print("Lunes");
-      break;
-    case TUESDAY:
-      display.print("Martes");
-      break;
-    case WEDNESDAY:
-      display.print("Miercoles");
-      break;
-    case THURSDAY:
-      display.print("Jueves");
-      break;
-    case FRIDAY:
-      display.print("Viernes");
-      break;
-    case SATURDAY:
-      display.print("Sabado");
-      break;
-    case SUNDAY:
-      display.print("Domingo");
-      break;
-  }
+  display.print(daysOfWeek[day]);
+  
   uint8_t hours = seconds / 3600;
   uint8_t minutes = (seconds % 3600) / 60;
   uint8_t remainingSeconds = seconds % 60;
@@ -89,7 +68,7 @@ void showMenuOnScreen(char* menuText){
   display.display();
 }
 
-void showTextOnScreen(char *str, int size){
+void showTextOnScreen(char *str){
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);

@@ -18,6 +18,8 @@ enum day{
 extern TaskHandle_t timerTaskHandle;
 extern SemaphoreHandle_t timerMutex;
 
+extern char daysOfWeek[7];
+
 void initTime();
 void timerTask(void *parameter);
 uint32_t getSeconds();
