@@ -1,29 +1,5 @@
 #include "menu.h"
 
-enum exitFlags{
-  NO_CHANGE,
-  UPDATED_SCREEN;
-  EXIT_SEND_SIGNAL,
-  EXIT_COUNTDOWN,
-};
-
-enum manuLayers{
-  LAYER_1,
-  LAYER_2,
-  LAYER_3,
-};
-
-enum menuIds{
-  MENU_1,
-  MENU_2,
-  MENU_3,
-  MENU_4,
-  MENU_1_1,
-  MENU_2_1,
-  MENU_2_2,
-  MENU_3_1,
-};
-
 typedef struct MenuItem {
     char* title;
     const uint8_t id;
@@ -51,36 +27,37 @@ uint8_t localDay;
 uint32_t localSeconds;
 
 void initMenu(){
-  menuDayHour_1->leftMenu = menuExit_4;
-  menuDayHour_1->rightMenu = menuChannel_2;
-  menuDayHour_1->childrenMenu = menuDayHour_1_1;
+  menuDayHour_1.leftMenu = &menuExit_4;
+  menuDayHour_1.rightMenu = &menuChannel_2;
+  menuDayHour_1.childrenMenu = &menuDayHour_1_1;
 
-  menuChannel_2->leftMenu = menuDayHour_1;
-  menuChannel_2->rightMenu = menuSendTime_3;
-  menuChannel_2->childrenMenu = menuChannel_2_1;
+  menuChannel_2.leftMenu = &menuDayHour_1;
+  menuChannel_2.rightMenu = &menuSendTime_3;
+  menuChannel_2.childrenMenu = &menuChannel_2_1;
 
-  menuSendTime_3->leftMenu = menuChannel_2;
-  menuSendTime_3->rightMenu = menuExit_4;
-  menuSendTime_3->childrenMenu = menuChannel_3;
+  menuSendTime_3.leftMenu = &menuChannel_2;
+  menuSendTime_3.rightMenu = &menuExit_4;
+  menuSendTime_3.childrenMenu = &menuSendTime_3_1;
 
-  menuExit_4->leftMenu = menuSendTime_3;
-  menuExit_4->rightMenu = menuDayHour_1;
+  menuExit_4.leftMenu = &menuSendTime_3;
+  menuExit_4.rightMenu = &menuDayHour_1;
 
-  menuDayHour_1_1->parentMenu = menuDayHour_1;
+  menuDayHour_1_1.parentMenu = &menuDayHour_1;
 
-  menuChannel_2_1->parentMenu = menuChannel_2;
-  menuChannel_2_1->childrenMenu = menuChannel_2_2;
+  menuChannel_2_1.parentMenu = &menuChannel_2;
+  menuChannel_2_1.childrenMenu = &menuChannel_2_2;
 
-  menuChannel_2_2->parentMenu = menuChannel_2_1;
+  menuChannel_2_2.parentMenu = &menuChannel_2_1;
 
-  menuChannel_3_1->parentMenu = menuSendTime_3;
+  menuSendTime_3_1.parentMenu = &menuSendTime_3;
 }
 
 uint8_t updateMenu(bool middleBtn, bool leftBtn, bool rightBtn){
   //mostrar menu si fue reiniciado
   if(currentMenu == NULL){
-    currentMenu = menuDayHour_1;
+    currentMenu = &menuDayHour_1;
     showTextOnScreen(currentMenu->title);
+    showButtonsOnScreen();
     return UPDATED_SCREEN;
   }
 
@@ -92,24 +69,26 @@ uint8_t updateMenu(bool middleBtn, bool leftBtn, bool rightBtn){
   switch(currentLayer){
     case LAYER_1:
       if (wasPressed(btnLeft)){
-        current_menu = current_menu->leftMenu;
+        currentMenu = currentMenu->leftMenu;
         showTextOnScreen(currentMenu->title);
+        showButtonsOnScreen();
         return UPDATED_SCREEN;
       }
 
       else if (wasPressed(btnRight)){
-        current_menu = current_menu->rightMenu;
+        currentMenu = currentMenu->rightMenu;
         showTextOnScreen(currentMenu->title);
+        showButtonsOnScreen();
         return UPDATED_SCREEN;
       }
 
       else if (wasPressed(btnMiddle)){
-        if (current_menu->id == MENU_4)
+        if (currentMenu->id == MENU_4)
           return EXIT_COUNTDOWN;
 
-        current_menu = current_menu->childrenMenu;
-        current_menu->selectedItem = 0;
-        showChild(current_menu->id);
+        currentMenu = currentMenu->childrenMenu;
+        currentMenu->selectedItem = 0;
+        showChild(currentMenu->id);
 
         lastMillis = millis();
         return UPDATED_SCREEN;
@@ -117,14 +96,10 @@ uint8_t updateMenu(bool middleBtn, bool leftBtn, bool rightBtn){
       break;
     
     case LAYER_2:
-      if (millis() - lastMillis >= 500){
-        //update selected item
-      }
-
       if (wasPressed(btnMiddle)){
-        //
+        return EXIT_COUNTDOWN;
       }
-
+      /*
       else if (wasPressed(btnLeft)){
         //
       }
@@ -132,15 +107,14 @@ uint8_t updateMenu(bool middleBtn, bool leftBtn, bool rightBtn){
       else if (wasPressed(btnRight)){
         //
       }
+      */
       break;
   }
 }
 
 void showChild(uint8_t childId){
-  //
-
   switch(childId){
-    case MENU_1_1:
+    case MENU_1_1:{
       localDay = getDay();
       localSeconds = getSeconds();
 
@@ -150,7 +124,7 @@ void showChild(uint8_t childId){
 
       char buffer[50], temp[20];
 
-      sprintf(buffer, "   ");
+      sprintf(buffer, "\n\n\n   ");
 
       if(hours <= 9)
         sprintf(temp, "0%d:", hours);
@@ -165,15 +139,16 @@ void showChild(uint8_t childId){
       strcat(buffer, temp);
 
       if(remainingSeconds <= 9)
-        sprintf(temp, "0%d  %s", remainingSeconds);
+        sprintf(temp, "0%d  %s", remainingSeconds, daysOfWeek[localDay]);
       else 
-        sprintf(temp, "%d  %s", remainingSeconds);
+        sprintf(temp, "%d  %s", remainingSeconds, daysOfWeek[localDay]);
       strcat(buffer, temp);
 
 
-      showTextOnScreen();
-
+      showTextOnScreen(buffer);
+      showButtonsOnScreen();
       break;
+    }
     default:
       showTextOnScreen("error: invalid");
   }
@@ -181,5 +156,4 @@ void showChild(uint8_t childId){
 
 void restartMenu(){
   currentMenu = NULL;
-  currentItem = 0;
 }

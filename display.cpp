@@ -11,7 +11,7 @@ void initDisplay(uint8_t warningLed){
   
   display.setTextSize(1);
 
-  showTextOnScreen("Iniciando...", 1);
+  showTextOnScreen("Iniciando...");
 }
 
 void showTimeOnScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day){
@@ -21,8 +21,9 @@ void showTimeOnScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day){
   display.setTextColor(SSD1306_WHITE);
 
   display.setCursor(0, ROW_1);
+
   display.print(daysOfWeek[day]);
-  
+
   uint8_t hours = seconds / 3600;
   uint8_t minutes = (seconds % 3600) / 60;
   uint8_t remainingSeconds = seconds % 60;
@@ -50,12 +51,12 @@ void showTimeOnScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day){
   display.display();
 }
 
-void showMenuOnScreen(char* menuText){
-  display.clearDisplay();
+void showButtonsOnScreen(){
   display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0, ROW_3);
-  display.print(menuText);
   
+  display.drawLine(0, 50, 30, 50, SSD1306_WHITE);
+  display.drawLine(30, 50, 30, 64, SSD1306_WHITE);
+
   display.setCursor(0, ROW_8);
   display.print("<--");
 

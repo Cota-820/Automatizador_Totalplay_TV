@@ -87,21 +87,19 @@ void loop() {
       //accion a realizar dependiendo de bandera de salida
       switch (menuExitFlag){
         case NO_CHANGE:
-          if (currentMillis - lastMillisMenu >= MENU_MS_TO_WAIT){
-            menuInitialized = false;
-            STATE = STATE_COUNTDOWN;
-          }
+          if (currentMillis - lastMillisMenu >= MENU_MS_TO_WAIT)
+            state = STATE_COUNTDOWN;
           break;
         case UPDATED_SCREEN:
           lastMillisMenu = currentMillis;
           break;
         case EXIT_SEND_SIGNAL:
           menuInitialized = false;
-          STATE = STATE_SEND;
+          state = STATE_SEND;
           break;
         case EXIT_COUNTDOWN:
           menuInitialized = false;
-          STATE = STATE_COUNTDOWN;
+          state = STATE_COUNTDOWN;
           break;
       }
 

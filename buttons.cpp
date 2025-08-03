@@ -5,12 +5,12 @@ Button btnMiddle = {BUTTON_MIDDLE_PIN, HIGH, HIGH};
 Button btnLeft   = {BUTTON_LEFT_PIN, HIGH, HIGH};
 Button btnRight  = {BUTTON_RIGHT_PIN, HIGH, HIGH};
 
-void initButtonPins()[
+void initButtonPins(){
   pinMode(btnSend.pin, INPUT_PULLUP);
   pinMode(btnMiddle.pin, INPUT_PULLUP);
   pinMode(btnLeft.pin, INPUT_PULLUP);
   pinMode(btnRight.pin, INPUT_PULLUP);
-]
+}
 
 void updateButtons() {
   btnSend.lastState = btnSend.currentState;
