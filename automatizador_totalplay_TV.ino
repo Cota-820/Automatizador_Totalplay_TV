@@ -3,33 +3,20 @@
 #include "display.h"
 #include "local_time.h"
 #include "buttons.h"
+#include "menu.h"
 #include <IRremote.h>
 #include "string.h"
 
 #define COUNTDOWN_MS_TO_WAIT 1000
-#define MENU_MS_TO_WAIT 60000
+#define MENU_MS_TO_WAIT 30000
 
 enum state{
   STATE_COUNTDOWN,
   STATE_SEND,
-  STATE_MENU_START,
   STATE_MENU,
 };
 
-enum menuOptions{
-  DAY_HOUR,
-  CHANNEL,
-  SEND_TIME,
-  EXIT,
-  MENU_COUNT,
-};
-
-
-char* menuTextArray[] = {"Cambiar dia y hora", "Cambiar canales", "Cambiar tiempo de envio", "Salir"};
-
-uint32_t seconds;
-uint16_t secondsCountdown;
-uint8_t state = STATE_COUNTDOWN, menuOption, day, lastDay;
+uint8_t state = STATE_COUNTDOWN, lastDay;
 unsigned long currentMillis, lastMillisCountdown = 0, lastMillisMenu = 0;
 char screenText[128] = {0}; 
 
@@ -62,15 +49,15 @@ void loop() {
     case STATE_COUNTDOWN:
       //cambiar a menu si se presiono boton
       if (wasPressed(btnMiddle))
-        state = STATE_MENU_START;
+        state = STATE_MENU;
 
       //actualizar pantalla cada segundo
       if (currentMillis - lastMillisCountdown >= COUNTDOWN_MS_TO_WAIT) {
         lastMillisCountdown = currentMillis;
 
-        secondsCountdown = getSecondsCountdown();
-        seconds = getSeconds();
-        day = getDay();
+        uint16_t secondsCountdown = getSecondsCountdown();
+        uint32_t seconds = getSeconds();
+        uint8_t day = getDay();
         
         //si no acabo el tiempo, y no es otro dia, actualiza pantalla
         if(secondsCountdown != 0 && day==lastDay)
@@ -87,25 +74,28 @@ void loop() {
       resetCountdown();
       state = STATE_COUNTDOWN;
       break;
-    case STATE_MENU_START:
-      menuOption = DAY_HOUR;
-      showMenuOnScreen(menuTextArray[menuOption]);
-      state = STATE_MENU;
-      break;
     case STATE_MENU:
-      if (wasPressed(btnMiddle))
-        state = STATE_COUNTDOWN;
-      else if (wasPressed(btnLeft)){
-        menuOption = (menuOption - 1 + MENU_COUNT) % MENU_COUNT;
-        showMenuOnScreen(menuTextArray[menuOption]);
-      }
-      else if (wasPressed(btnRight)){
-        menuOption = (menuOption + 1) % MENU_COUNT;
-        showMenuOnScreen(menuTextArray[menuOption]);
+      uint8_t menuExitFlag = updateMenu(wasPressed(btnMiddle), wasPressed(btnLeft), wasPressed(btnRight));
+
+      //accion a realizar dependiendo de bandera de salida
+      switch (menuExitFlag){
+        case NO_CHANGE:
+          if (currentMillis - lastMillisMenu >= MENU_MS_TO_WAIT){
+            restartMenu();
+            STATE = STATE_COUNTDOWN;
+          }
+          break;
+        case UPDATED_SCREEN:
+          lastMillisMenu = currentMillis;
+          break;
+        case EXIT_SEND_SIGNAL:
+          STATE = STATE_SEND;
+          break;
+        case EXIT_COUNTDOWN:
+          STATE = STATE_COUNTDOWN;
+          break;
       }
 
-      if (currentMillis - lastMillisCountdown >= MENU_MS_TO_WAIT)
-        STATE = STATE_COUNTDOWN
       break;
   }
 
