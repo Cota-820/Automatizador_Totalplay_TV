@@ -51,7 +51,7 @@ void showTimeOnScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day){
   display.display();
 }
 
-void showButtonsOnScreen(){
+void showButtonsOnScreen(uint8_t buttonText){
   display.setTextColor(SSD1306_WHITE);
   
   display.drawLine(0, 50, 30, 50, SSD1306_WHITE);
@@ -61,7 +61,10 @@ void showButtonsOnScreen(){
   display.print("<--");
 
   display.setCursor(50, ROW_8);
-  display.print("Elegir");
+  if (buttonText == CHOSE)
+    display.print("Elegir");
+  else if(buttonText == CHANGE)
+    display.print("Cambiar");
 
   display.setCursor(113, ROW_8);
   display.print("-->");
@@ -73,6 +76,18 @@ void showTextOnScreen(char *str){
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
+  display.print(str);
+  display.display();
+}
+
+void showTextOnScreenParams(char *str, bool clearScreen, uint8_t color, uint16_t x_pos, uint16_t y_pos){
+  if(clearScreen)
+    display.clearDisplay();
+  if (color == TEXT_WHITE)
+    display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
+  else if (color == TEXT_BLACK)
+    display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+  display.setCursor(x_pos, y_pos);
   display.print(str);
   display.display();
 }

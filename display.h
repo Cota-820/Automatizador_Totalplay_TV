@@ -8,6 +8,9 @@
 #include "string.h" 
 #include "local_time.h"
 
+#define TEXT_WHITE 0
+#define TEXT_BLACK 1
+
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_ADDRESS 0x3C
@@ -21,9 +24,17 @@
 #define ROW_7 48
 #define ROW_8 56
 
+#define ROW_HIGHT 8
+#define LETTER_LENGHT 6
+
+#define CHOSE 0
+#define CHANGE 1
+
+
 void initDisplay(uint8_t warningLed);
 void showTimeOnScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day);
-void showButtonsOnScreen();
+void showButtonsOnScreen(uint8_t buttonText);
 void showTextOnScreen(char *str);
+void showTextOnScreenParams(char *str, bool clearScreen, uint8_t color, uint16_t x_pos, uint16_t y_pos);
 
 #endif

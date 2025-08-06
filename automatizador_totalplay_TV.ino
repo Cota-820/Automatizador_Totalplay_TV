@@ -25,6 +25,7 @@ void setup() {
   Serial.begin(115200);
 
   initTime();
+  initMenu();
 
   pinMode(BUILD_IN_LED, OUTPUT);
   pinMode(LED_IR_PIN, OUTPUT);
@@ -35,7 +36,8 @@ void setup() {
 
   IrSender.begin(LED_IR_PIN);
 
-  state = STATE_SEND;
+  //state = STATE_SEND;
+  state = STATE_COUNTDOWN;
 
   delay(1000); //TEMP
 }
@@ -43,9 +45,10 @@ void setup() {
 void loop() {
   currentMillis = millis();
 
-  if (wasPressed(btnSend))
+  if (wasPressed(btnSend)){
     state = STATE_SEND;
     menuInitialized = false;
+  }
 
   switch(state){
     case STATE_COUNTDOWN:

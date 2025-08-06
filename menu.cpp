@@ -15,16 +15,17 @@ MenuItem menuDayHour_1 = {"\n\n1. Cambiar dia y hora", MENU_1, LAYER_1, 0, NULL,
 MenuItem menuChannel_2 = {"\n\n2. Cambiar canales", MENU_2, LAYER_1, 0, NULL, NULL, NULL, NULL};
 MenuItem menuSendTime_3 = {"\n\n3. Cambiar tiempo de envio", MENU_3, LAYER_1, 0, NULL, NULL, NULL, NULL};
 MenuItem menuExit_4 = {"\n\n4. Salir", MENU_4, LAYER_1, 0, NULL, NULL, NULL, NULL};
-MenuItem menuDayHour_1_1 = {NULL, MENU_1_1, LAYER_2, 0, NULL, NULL, NULL, NULL};
-MenuItem menuChannel_2_1 = {NULL, MENU_2_1, LAYER_2, 0, NULL, NULL, NULL, NULL};
-MenuItem menuChannel_2_2 = {NULL, MENU_2_2, LAYER_3, 0, NULL, NULL, NULL, NULL};
-MenuItem menuSendTime_3_1 = {NULL, MENU_3_1, LAYER_2, 0, NULL, NULL, NULL, NULL};
+MenuItem menuDayHour_1_1 = {"", MENU_1_1, LAYER_2, 0, NULL, NULL, NULL, NULL};
+MenuItem menuChannel_2_1 = {"", MENU_2_1, LAYER_2, 0, NULL, NULL, NULL, NULL};
+MenuItem menuChannel_2_2 = {"", MENU_2_2, LAYER_3, 0, NULL, NULL, NULL, NULL};
+MenuItem menuSendTime_3_1 = {"", MENU_3_1, LAYER_2, 0, NULL, NULL, NULL, NULL};
 
 MenuItem* currentMenu = NULL;
-static bool menuShowed = false, optionSelected = false;
+static bool menuShowed = false, itemHighlighted = false;
 static unsigned long lastMillis = 0;
-uint8_t localDay;
-uint32_t localSeconds;
+static uint8_t localDay;
+static uint32_t localSeconds;
+static char items[ITEMS_AMOUNT][ITEMS_SIZE] = {0};
 
 void initMenu(){
   menuDayHour_1.leftMenu = &menuExit_4;
@@ -52,37 +53,35 @@ void initMenu(){
   menuSendTime_3_1.parentMenu = &menuSendTime_3;
 }
 
-uint8_t updateMenu(bool middleBtn, bool leftBtn, bool rightBtn){
+uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRightBtn){
   //mostrar menu si fue reiniciado
   if(currentMenu == NULL){
     currentMenu = &menuDayHour_1;
     showTextOnScreen(currentMenu->title);
-    showButtonsOnScreen();
+    showButtonsOnScreen(CHOSE);
     return UPDATED_SCREEN;
   }
-
-  if(!middleBtn && !leftBtn && !rightBtn)
-    return NO_CHANGE;
 
   uint8_t currentLayer = currentMenu->layer;
 
   switch(currentLayer){
     case LAYER_1:
-      if (wasPressed(btnLeft)){
+      if (pressedLeftBtn){
         currentMenu = currentMenu->leftMenu;
         showTextOnScreen(currentMenu->title);
-        showButtonsOnScreen();
+        showButtonsOnScreen(CHOSE);
         return UPDATED_SCREEN;
       }
 
-      else if (wasPressed(btnRight)){
+      else if (pressedRightBtn){
         currentMenu = currentMenu->rightMenu;
+        Serial.print("ok");
         showTextOnScreen(currentMenu->title);
-        showButtonsOnScreen();
+        showButtonsOnScreen(CHOSE);
         return UPDATED_SCREEN;
       }
 
-      else if (wasPressed(btnMiddle)){
+      else if (pressedMiddleBtn){
         if (currentMenu->id == MENU_4)
           return EXIT_COUNTDOWN;
 
@@ -90,26 +89,46 @@ uint8_t updateMenu(bool middleBtn, bool leftBtn, bool rightBtn){
         currentMenu->selectedItem = 0;
         showChild(currentMenu->id);
 
-        lastMillis = millis();
+        itemHighlighted = false;
+        lastMillis = 0;
         return UPDATED_SCREEN;
       }
       break;
     
     case LAYER_2:
-      if (wasPressed(btnMiddle)){
+      //flasehar opcion actual
+      if (!itemHighlighted){
+        if (millis() - lastMillis > HIGHLIGHT_OFF_MS){
+          showTextOnScreenParams(items[currentMenu->selectedItem], false, TEXT_BLACK, MENU_1_1_ITEM_1_X_POS, MENU_1_1_ITEM_1_Y_POS);
+          itemHighlighted = true;
+          lastMillis = millis();
+        }
+      }
+      else if (itemHighlighted){
+        if (millis() - lastMillis > HIGHLIGHT_ON_MS){
+          showTextOnScreenParams(items[currentMenu->selectedItem], false, TEXT_WHITE, MENU_1_1_ITEM_1_X_POS, MENU_1_1_ITEM_1_Y_POS);
+          itemHighlighted = false;
+          lastMillis = millis();
+        }
+      }
+
+      if (pressedMiddleBtn){
         return EXIT_COUNTDOWN;
       }
       /*
-      else if (wasPressed(btnLeft)){
+      else if (pressedLeftBtn){
         //
       }
 
-      else if (wasPressed(btnRight)){
+      else if (pressedRightBtn){
         //
       }
       */
       break;
   }
+
+  if(!pressedMiddleBtn && !pressedLeftBtn && !pressedRightBtn)
+    return NO_CHANGE;
 }
 
 void showChild(uint8_t childId){
@@ -122,31 +141,43 @@ void showChild(uint8_t childId){
       uint8_t minutes = (localSeconds % 3600) / 60;
       uint8_t remainingSeconds = localSeconds % 60;
 
+      uint8_t i = 0;
+
       char buffer[50], temp[20];
 
-      sprintf(buffer, "\n\n\n   ");
+      //sprintf(buffer, "\n\n\n   ");
 
       if(hours <= 9)
-        sprintf(temp, "0%d:", hours);
+        sprintf(temp, "0%d", hours);
       else 
-        sprintf(temp, "%d:", hours);
+        sprintf(temp, "%d", hours);
+      sprintf(items[i++], temp);
       strcat(buffer, temp);
+      strcat(buffer, ":");
 
       if(minutes <= 9)
-        sprintf(temp, "0%d:", minutes);
+        sprintf(temp, "0%d", minutes);
       else 
-        sprintf(temp, "%d:", minutes);
+        sprintf(temp, "%d", minutes);
+      sprintf(items[i++], temp);
       strcat(buffer, temp);
+      strcat(buffer, ":");
 
       if(remainingSeconds <= 9)
-        sprintf(temp, "0%d  %s", remainingSeconds, daysOfWeek[localDay]);
+        sprintf(temp, "0%d", remainingSeconds);
       else 
-        sprintf(temp, "%d  %s", remainingSeconds, daysOfWeek[localDay]);
+        sprintf(temp, "%d", remainingSeconds);
+      sprintf(items[i++], temp);
+      strcat(buffer, temp);
+      strcat(buffer, "  ");
+
+      sprintf(temp, "%s",daysOfWeek[localDay]);
+      sprintf(items[i++], temp);
       strcat(buffer, temp);
 
 
-      showTextOnScreen(buffer);
-      showButtonsOnScreen();
+      showTextOnScreenParams(buffer, true, TEXT_WHITE, MENU_1_1_ITEM_1_X_POS, MENU_1_1_ITEM_1_Y_POS);
+      showButtonsOnScreen(CHANGE);
       break;
     }
     default:

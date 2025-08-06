@@ -6,6 +6,14 @@
 #include "local_time.h"
 #include "string.h"
 
+#define HIGHLIGHT_ON_MS 500
+#define HIGHLIGHT_OFF_MS 200
+
+#define ITEMS_AMOUNT 5
+#define ITEMS_SIZE 20
+
+#define MENU_1_1_ITEM_1_X_POS (LETTER_LENGHT*3)
+#define MENU_1_1_ITEM_1_Y_POS (ROW_HIGHT*3)
 
 enum exitFlags{
   NO_CHANGE,
@@ -31,6 +39,7 @@ enum menuIds{
   MENU_3_1,
 };
 
+void initMenu();
 uint8_t updateMenu(bool middleBtn, bool leftBtn, bool rightBtn);
 void showChild(uint8_t childId);
 void restartMenu();
