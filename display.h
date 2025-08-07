@@ -9,7 +9,7 @@
 #include "local_time.h"
 
 #define TEXT_WHITE 0
-#define TEXT_BLACK 1
+#define TEXT_HIGHLIGHTED 1
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64

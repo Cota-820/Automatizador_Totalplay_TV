@@ -1,24 +1,13 @@
 #include "menu.h"
 
-typedef struct MenuItem {
-    char* title;
-    const uint8_t id;
-    const uint8_t layer;
-    uint8_t selectedItem;
-    struct MenuItem* parentMenu;
-    struct MenuItem* childrenMenu;
-    struct MenuItem* leftMenu;
-    struct MenuItem* rightMenu;
-} MenuItem;
-
-MenuItem menuDayHour_1 = {"\n\n1. Cambiar dia y hora", MENU_1, LAYER_1, 0, NULL, NULL, NULL, NULL};
-MenuItem menuChannel_2 = {"\n\n2. Cambiar canales", MENU_2, LAYER_1, 0, NULL, NULL, NULL, NULL};
-MenuItem menuSendTime_3 = {"\n\n3. Cambiar tiempo de envio", MENU_3, LAYER_1, 0, NULL, NULL, NULL, NULL};
-MenuItem menuExit_4 = {"\n\n4. Salir", MENU_4, LAYER_1, 0, NULL, NULL, NULL, NULL};
-MenuItem menuDayHour_1_1 = {"", MENU_1_1, LAYER_2, 0, NULL, NULL, NULL, NULL};
-MenuItem menuChannel_2_1 = {"", MENU_2_1, LAYER_2, 0, NULL, NULL, NULL, NULL};
-MenuItem menuChannel_2_2 = {"", MENU_2_2, LAYER_3, 0, NULL, NULL, NULL, NULL};
-MenuItem menuSendTime_3_1 = {"", MENU_3_1, LAYER_2, 0, NULL, NULL, NULL, NULL};
+MenuItem menuDayHour_1 = {"\n\n1. Cambiar dia y hora", MENU_1, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuChannel_2 = {"\n\n2. Cambiar canales", MENU_2, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuSendTime_3 = {"\n\n3. Cambiar tiempo de envio", MENU_3, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuExit_4 = {"\n\n4. Salir", MENU_4, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuDayHour_1_1 = {"", MENU_1_1, LAYER_2, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuChannel_2_1 = {"", MENU_2_1, LAYER_2, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuChannel_2_2 = {"", MENU_2_2, LAYER_3, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuSendTime_3_1 = {"", MENU_3_1, LAYER_2, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
 
 MenuItem* currentMenu = NULL;
 static bool menuShowed = false, itemHighlighted = false;
@@ -51,6 +40,17 @@ void initMenu(){
   menuChannel_2_2.parentMenu = &menuChannel_2_1;
 
   menuSendTime_3_1.parentMenu = &menuSendTime_3;
+
+  uint8_t i=0;
+  menuDayHour_1_1.itemXPos[i] = MENU_1_1_ITEM_1_X_POS;
+  menuDayHour_1_1.itemYPos[i++] = MENU_1_1_ITEM_1_Y_POS;
+  menuDayHour_1_1.itemXPos[i] = MENU_1_1_ITEM_2_X_POS;
+  menuDayHour_1_1.itemYPos[i++] = MENU_1_1_ITEM_2_Y_POS;
+  menuDayHour_1_1.itemXPos[i] = MENU_1_1_ITEM_3_X_POS;
+  menuDayHour_1_1.itemYPos[i++] = MENU_1_1_ITEM_3_Y_POS;
+  menuDayHour_1_1.itemXPos[i] = MENU_1_1_ITEM_4_X_POS;
+  menuDayHour_1_1.itemYPos[i++] = MENU_1_1_ITEM_4_Y_POS;
+  menuDayHour_1_1.maxItems = i-1;
 }
 
 uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRightBtn){
@@ -99,14 +99,14 @@ uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRight
       //flasehar opcion actual
       if (!itemHighlighted){
         if (millis() - lastMillis > HIGHLIGHT_OFF_MS){
-          showTextOnScreenParams(items[currentMenu->selectedItem], false, TEXT_BLACK, MENU_1_1_ITEM_1_X_POS, MENU_1_1_ITEM_1_Y_POS);
+          highlightMenuItem(true, currentMenu, items);
           itemHighlighted = true;
           lastMillis = millis();
         }
       }
       else if (itemHighlighted){
         if (millis() - lastMillis > HIGHLIGHT_ON_MS){
-          showTextOnScreenParams(items[currentMenu->selectedItem], false, TEXT_WHITE, MENU_1_1_ITEM_1_X_POS, MENU_1_1_ITEM_1_Y_POS);
+          highlightMenuItem(false, currentMenu, items);
           itemHighlighted = false;
           lastMillis = millis();
         }
@@ -115,15 +115,29 @@ uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRight
       if (pressedMiddleBtn){
         return EXIT_COUNTDOWN;
       }
-      /*
+      
       else if (pressedLeftBtn){
-        //
+        highlightMenuItem(false, currentMenu, items);
+        if (currentMenu->selectedItem != 0)
+          currentMenu->selectedItem--;
+        else
+          currentMenu->selectedItem = currentMenu->maxItems;
+        highlightMenuItem(true, currentMenu, items);
+        itemHighlighted = true;
+        lastMillis = millis();
       }
 
       else if (pressedRightBtn){
-        //
+        highlightMenuItem(false, currentMenu, items);
+        if (currentMenu->selectedItem != currentMenu->maxItems)
+          currentMenu->selectedItem++;
+        else
+          currentMenu->selectedItem = 0;
+        highlightMenuItem(true, currentMenu, items);
+        itemHighlighted = true;
+        lastMillis = millis();
       }
-      */
+      Serial.println(currentMenu->selectedItem);
       break;
   }
 
@@ -144,8 +158,6 @@ void showChild(uint8_t childId){
       uint8_t i = 0;
 
       char buffer[50], temp[20];
-
-      //sprintf(buffer, "\n\n\n   ");
 
       if(hours <= 9)
         sprintf(temp, "0%d", hours);
@@ -183,6 +195,15 @@ void showChild(uint8_t childId){
     default:
       showTextOnScreen("error: invalid");
   }
+}
+
+void highlightMenuItem(bool highlight, MenuItem* currentMenu, char items[][ITEMS_SIZE]){
+  if (highlight)
+    showTextOnScreenParams(items[currentMenu->selectedItem], false, TEXT_HIGHLIGHTED,
+      currentMenu->itemXPos[currentMenu->selectedItem], currentMenu->itemYPos[currentMenu->selectedItem]);
+  else
+    showTextOnScreenParams(items[currentMenu->selectedItem], false, TEXT_WHITE,
+      currentMenu->itemXPos[currentMenu->selectedItem], currentMenu->itemYPos[currentMenu->selectedItem]);
 }
 
 void restartMenu(){

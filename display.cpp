@@ -85,7 +85,7 @@ void showTextOnScreenParams(char *str, bool clearScreen, uint8_t color, uint16_t
     display.clearDisplay();
   if (color == TEXT_WHITE)
     display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
-  else if (color == TEXT_BLACK)
+  else if (color == TEXT_HIGHLIGHTED)
     display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
   display.setCursor(x_pos, y_pos);
   display.print(str);
