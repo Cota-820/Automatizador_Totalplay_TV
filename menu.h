@@ -71,7 +71,8 @@ typedef struct MenuItem {
 void initMenu();
 uint8_t updateMenu(bool middleBtn, bool leftBtn, bool rightBtn);
 void showChild(uint8_t childId);
-void highlightMenuItem(bool highlight, MenuItem* currentMenu, char items[][ITEMS_SIZE]);
+void highlightMenuItem(bool highlight, MenuItem* currentMenu, char items[][ITEMS_SIZE], unsigned long *lastMilis);
+void updateTimeItem(int addSeconds, int index, int divisor);
 void restartMenu();
 
 #endif

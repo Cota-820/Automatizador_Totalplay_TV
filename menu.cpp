@@ -12,9 +12,9 @@ MenuItem menuSendTime_3_1 = {MENU_DEFAULT_TEXT, MENU_3_1, LAYER_2, 0, 0, {0}, {0
 
 MenuItem* currentMenu = NULL;
 static bool menuShowed = false, itemHighlighted = false;
-static unsigned long lastMillis = 0;
-static uint8_t localDay;
-static uint32_t localSeconds;
+static unsigned long lastMillisHighlight = 0;
+static uint8_t localDay = 0;
+static uint32_t localSeconds = 0;
 static char items[ITEMS_AMOUNT][ITEMS_SIZE] = {0};
 
 void initMenu(){
@@ -89,37 +89,30 @@ uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRight
         showChild(currentMenu->id);
 
         itemHighlighted = false;
-        lastMillis = 0;
+        //lastMillisHighlight = 0;
         return UPDATED_SCREEN;
       }
       break;
     
     case LAYER_2:
       //flasehar opcion actual
-      if (!itemHighlighted){
-        if (millis() - lastMillis > HIGHLIGHT_OFF_MS){
-          highlightMenuItem(true, currentMenu, items);
-          itemHighlighted = true;
-          lastMillis = millis();
-        }
-      }
-      else if (itemHighlighted){
-        if (millis() - lastMillis > HIGHLIGHT_ON_MS){
-          highlightMenuItem(false, currentMenu, items);
-          itemHighlighted = false;
-          lastMillis = millis();
-        }
+      unsigned long interval = itemHighlighted ? HIGHLIGHT_ON_MS : HIGHLIGHT_OFF_MS;
+
+      if (millis() - lastMillisHighlight > interval) {
+          itemHighlighted = !itemHighlighted;
+          highlightMenuItem(itemHighlighted, currentMenu, items, &lastMillisHighlight);
       }
 
       if (pressedMiddleBtn){
         if (currentMenu == menuDayHour_1_1){
-          //
+          eventTimeMenu1_1(currentMenu->selectedItem);
+
         }
         return EXIT_COUNTDOWN;
       }
       
       else if (pressedLeftBtn || pressedRightBtn){
-        highlightMenuItem(false, currentMenu, items);
+        highlightMenuItem(false, currentMenu, items, &lastMillisHighlight);
         if(pressedLeftBtn)
           if (currentMenu->selectedItem != 0)
             currentMenu->selectedItem--;
@@ -130,12 +123,11 @@ uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRight
             currentMenu->selectedItem++;
           else
             currentMenu->selectedItem = 0;
-        highlightMenuItem(true, currentMenu, items);
+        highlightMenuItem(true, currentMenu, items, &lastMillisHighlight);
         itemHighlighted = true;
-        lastMillis = millis();
         return UPDATED_SCREEN;
       }
-      Serial.println(currentMenu->selectedItem);
+      //Serial.println(currentMenu->selectedItem);
       break;
   }
 
@@ -159,28 +151,17 @@ void showChild(uint8_t childId){
 
       char buffer[50], temp[20];
 
-      if(hours <= 9)
-        sprintf(temp, "0%d", hours);
-      else 
-        sprintf(temp, "%d", hours);
-      sprintf(items[i++], temp);
-      strcat(buffer, temp);
+      sprintf(items[i++], "%02d", hours);
+      strcat(buffer, items[i++]);
       strcat(buffer, ":");
 
-      if(minutes <= 9)
-        sprintf(temp, "0%d", minutes);
-      else 
-        sprintf(temp, "%d", minutes);
-      sprintf(items[i++], temp);
-      strcat(buffer, temp);
+      
+      sprintf(items[i++], "%02d", minutes);
+      strcat(buffer, items[i++]);
       strcat(buffer, ":");
 
-      if(remainingSeconds <= 9)
-        sprintf(temp, "0%d", remainingSeconds);
-      else 
-        sprintf(temp, "%d", remainingSeconds);
-      sprintf(items[i++], temp);
-      strcat(buffer, temp);
+      sprintf(items[i++], "%02d", remainingSeconds);
+      strcat(buffer, items[i++]);
       strcat(buffer, "  ");
 
       sprintf(temp, "%s",daysOfWeek[localDay]);
@@ -197,17 +178,43 @@ void showChild(uint8_t childId){
   }
 }
 
-void highlightMenuItem(bool highlight, MenuItem* currentMenu, char items[][ITEMS_SIZE]){
+void highlightMenuItem(bool highlight, MenuItem* currentMenu, char items[][ITEMS_SIZE], unsigned long *lastMilis){
   if (highlight)
     showTextOnScreenParams(items[currentMenu->selectedItem], false, TEXT_HIGHLIGHTED,
       currentMenu->itemXPos[currentMenu->selectedItem], currentMenu->itemYPos[currentMenu->selectedItem]);
   else
     showTextOnScreenParams(items[currentMenu->selectedItem], false, TEXT_WHITE,
       currentMenu->itemXPos[currentMenu->selectedItem], currentMenu->itemYPos[currentMenu->selectedItem]);
+  
+  *lastMilis = millis();
 }
 
 uint8_t eventTimeMenu1_1(uint8_t selectedItem){
-  //
+
+  switch(selectedItem) {
+    case 0: // hour
+        updateTimeItem(3600, 0, 3600);
+        break;
+    case 1: // minutes
+        updateTimeItem(60, 1, 60);
+        break;
+    case 2: // seconds
+        updateTimeItem(1, 2, 1);
+        break;
+}
+
+  }
+}
+
+void updateTimeItem(uint16_t addSeconds, uint8_t index, int divisor) {
+    localSeconds += addSeconds;
+    localSeconds %= 86400;
+
+    uint8_t value = (localSeconds / divisor) % ((divisor == 3600) ? 24 : 60);
+
+    sprintf(items[index], "%02d", value);
+
+    highlightMenuItem(true, currentMenu, items, &lastMillisHighlight);
 }
 
 void restartMenu(){
