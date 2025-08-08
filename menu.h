@@ -14,6 +14,13 @@
 
 #define ITEM_ARRAY_SIZE 10
 
+#define MENU_1_TEXT  "\n\n1. Cambiar dia y hora"
+#define MENU_2_TEXT  "\n\n2. Cambiar canales"
+#define MENU_3_TEXT  "\n\n3. Cambiar tiempo de envio"
+#define MENU_4_TEXT  "\n\n4. Salir"
+#define MENU_DEFAULT_TEXT "N/A"
+#define MENU_ERROR "menu error: invalid pointer"
+
 #define MENU_1_1_ITEM_1_X_POS (LETTER_LENGHT*3)
 #define MENU_1_1_ITEM_1_Y_POS (ROW_HIGHT*3)
 #define MENU_1_1_ITEM_2_X_POS (LETTER_LENGHT*6)

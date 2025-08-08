@@ -27,7 +27,7 @@
 #define ROW_HIGHT 8
 #define LETTER_LENGHT 6
 
-#define CHOSE 0
+#define CHOOSE 0
 #define CHANGE 1
 
 
