@@ -13,22 +13,47 @@ void initButtonPins(){
 }
 
 void updateButtons() {
-  btnSend.lastState = btnSend.currentState;
-  btnSend.currentState = digitalRead(btnSend.pin);
-  
-  btnMiddle.lastState = btnMiddle.currentState;
-  btnMiddle.currentState = digitalRead(btnMiddle.pin);
-  
-  btnLeft.lastState = btnLeft.currentState;
-  btnLeft.currentState = digitalRead(btnLeft.pin);
-  
-  btnRight.lastState = btnRight.currentState;
-  btnRight.currentState = digitalRead(btnRight.pin);
+  updateButton(btnSend);
+  updateButton(btnMiddle);
+  updateButton(btnLeft);
+  updateButton(btnRight);
 
-  //evitar rebote de boton
-  vTaskDelay(pdMS_TO_TICKS(25));
+  vTaskDelay(pdMS_TO_TICKS(25)); // antirrebote
 }
 
-bool wasPressed(const Button &btn) {
-  return (btn.currentState == LOW && btn.lastState == HIGH);
+void updateButton(Button &btn) {
+  btn.lastState = btn.currentState;
+  btn.currentState = digitalRead(btn.pin);
+
+  if (btn.currentState == LOW && btn.lastState == HIGH) {
+    btn.pressStartTime = millis();
+    btn.lastRepeatTime = millis();
+    btn.longPressActive = false;
+  }
+  else if (btn.currentState == HIGH && btn.lastState == LOW) {
+    btn.longPressActive = false;
+  }
+}
+
+bool wasPressed(Button &btn) {
+  if (btn.currentState == LOW && btn.lastState == HIGH) {
+    return true;
+  }
+
+  if (btn.currentState == LOW) {
+    unsigned long now = millis();
+
+    if (!btn.longPressActive && (now - btn.pressStartTime >= 1000)) {
+      btn.longPressActive = true; // quitar const
+      btn.lastRepeatTime = now;
+      return true;
+    }
+
+    if (btn.longPressActive && (now - btn.lastRepeatTime >= 200)) {
+      btn.lastRepeatTime = now;
+      return true;
+    }
+  }
+
+  return false;
 }

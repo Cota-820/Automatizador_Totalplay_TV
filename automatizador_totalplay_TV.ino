@@ -16,8 +16,7 @@ enum state{
   STATE_MENU,
 };
 
-uint8_t state = STATE_COUNTDOWN, lastDay;
-bool menuInitialized = false;
+uint8_t state = STATE_COUNTDOWN;
 unsigned long currentMillis, lastMillisCountdown = 0, lastMillisMenu = 0;
 char screenText[128] = {0}; 
 
@@ -45,16 +44,16 @@ void setup() {
 void loop() {
   currentMillis = millis();
 
-  if (wasPressed(btnSend)){
+  if (wasPressed(btnSend))
     state = STATE_SEND;
-    menuInitialized = false;
-  }
 
   switch(state){
     case STATE_COUNTDOWN:
       //cambiar a menu si se presiono boton
-      if (wasPressed(btnMiddle))
+      if (wasPressed(btnMiddle)){
+        restartMenu();
         state = STATE_MENU;
+      }
 
       //actualizar pantalla cada segundo
       if (currentMillis - lastMillisCountdown >= COUNTDOWN_MS_TO_WAIT) {
@@ -64,13 +63,11 @@ void loop() {
         uint32_t seconds = getSeconds();
         uint8_t day = getDay();
         
-        //si no acabo el tiempo, y no es otro dia, actualiza pantalla
-        if(secondsCountdown != 0 && day==lastDay)
+        //si no acabo el tiempo, actualiza pantalla
+        if(secondsCountdown != 0)
           showTimeOnScreen(secondsCountdown, seconds, day);
         else
           state = STATE_SEND;
-
-        lastDay = day;
       }
       break;
 
@@ -80,11 +77,6 @@ void loop() {
       state = STATE_COUNTDOWN;
       break;
     case STATE_MENU:
-      if(!menuInitialized){
-        restartMenu();
-        menuInitialized = true;
-      }
-
       uint8_t menuExitFlag = updateMenu(wasPressed(btnMiddle), wasPressed(btnLeft), wasPressed(btnRight));
 
       //accion a realizar dependiendo de bandera de salida
@@ -97,11 +89,9 @@ void loop() {
           lastMillisMenu = currentMillis;
           break;
         case EXIT_SEND_SIGNAL:
-          menuInitialized = false;
           state = STATE_SEND;
           break;
         case EXIT_COUNTDOWN:
-          menuInitialized = false;
           state = STATE_COUNTDOWN;
           break;
       }

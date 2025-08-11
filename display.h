@@ -25,13 +25,15 @@
 #define ROW_8 56
 
 #define ROW_HIGHT 8
-#define LETTER_LENGHT 6
+#define LETTER_LEN 6
 
 #define CHOOSE 0
 #define CHANGE 1
 
 
 void initDisplay(uint8_t warningLed);
+void clearScreen();
+void clearScreenText(uint16_t x_pos, uint16_t y_pos, uint16_t characterNum);
 void showTimeOnScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day);
 void showButtonsOnScreen(uint8_t buttonText);
 void showTextOnScreen(char *str);

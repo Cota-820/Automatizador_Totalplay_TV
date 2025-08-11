@@ -14,6 +14,21 @@ void initDisplay(uint8_t warningLed){
   showTextOnScreen("Iniciando...");
 }
 
+void clearScreen(){
+  display.clearDisplay();
+}
+
+void clearScreenText(uint16_t x_pos, uint16_t y_pos, uint16_t characterNum){
+  char blankText[characterNum];
+  for (int i=0; i<characterNum; i++)
+    blankText[i] = ' ';
+
+  display.setCursor(x_pos, y_pos);
+  display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
+  display.print(blankText);
+  display.display();
+}
+
 void showTimeOnScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day){
   if (secondsCountdown < 0) secondsCountdown = 0;
 
@@ -27,7 +42,7 @@ void showTimeOnScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day){
   uint8_t hours = seconds / 3600;
   uint8_t minutes = (seconds % 3600) / 60;
   uint8_t remainingSeconds = seconds % 60;
-  display.setCursor(50, ROW_1);
+  display.setCursor(LETTER_LEN*10, ROW_1);
   display.print(hours);
   display.print(":");
   display.print(minutes);
@@ -46,7 +61,7 @@ void showTimeOnScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day){
   display.print(":");
   display.print(remainingSecondsCountdown);
 
-  display.setCursor(50, ROW_8);
+  display.setCursor(LETTER_LEN*7, ROW_8);
   display.print("Menu");
   display.display();
 }
@@ -61,7 +76,7 @@ void showButtonsOnScreen(uint8_t buttonText){
   display.print("<--");
 
   display.setCursor(50, ROW_8);
-  if (buttonText == CHOSE)
+  if (buttonText == CHOOSE)
     display.print("Elegir");
   else if(buttonText == CHANGE)
     display.print("Cambiar");
@@ -74,7 +89,7 @@ void showButtonsOnScreen(uint8_t buttonText){
 
 void showTextOnScreen(char *str){
   display.clearDisplay();
-  display.setTextColor(SSD1306_WHITE);
+  display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
   display.setCursor(0, 0);
   display.print(str);
   display.display();

@@ -9,32 +9,38 @@
 #define HIGHLIGHT_ON_MS 500
 #define HIGHLIGHT_OFF_MS 200
 
-#define ITEMS_AMOUNT 5
-#define ITEMS_SIZE 20
+#define ITEMS_AMOUNT 15
+#define ITEMS_SIZE 25
 
-#define ITEM_ARRAY_SIZE 10
-
-#define MENU_1_TEXT  "\n\n1. Cambiar dia y hora"
-#define MENU_2_TEXT  "\n\n2. Cambiar canales"
-#define MENU_3_TEXT  "\n\n3. Cambiar tiempo de envio"
-#define MENU_4_TEXT  "\n\n4. Salir"
-#define MENU_DEFAULT_TEXT "N/A"
-#define MENU_ERROR "menu error: invalid pointer"
-
-#define MENU_1_1_ITEM_1_X_POS (LETTER_LENGHT*3)
-#define MENU_1_1_ITEM_1_Y_POS (ROW_HIGHT*3)
-#define MENU_1_1_ITEM_2_X_POS (LETTER_LENGHT*6)
-#define MENU_1_1_ITEM_2_Y_POS (ROW_HIGHT*3)
-#define MENU_1_1_ITEM_3_X_POS (LETTER_LENGHT*9)
-#define MENU_1_1_ITEM_3_Y_POS (ROW_HIGHT*3)
-#define MENU_1_1_ITEM_4_X_POS (LETTER_LENGHT*13)
-#define MENU_1_1_ITEM_4_Y_POS (ROW_HIGHT*3)
+#define ITEM_ARRAY_SIZE 15
 
 enum exitFlags{
   NO_CHANGE,
   UPDATED_SCREEN,
   EXIT_SEND_SIGNAL,
   EXIT_COUNTDOWN,
+};
+
+#define MENU_1_TEXT  "\n\n1. Cambiar dia y hora"
+#define MENU_2_TEXT  "\n\n2. Cambiar canales"
+#define MENU_3_TEXT  "\n\n3. Cambiar tiempo de envio"
+#define MENU_4_TEXT  "\n\n4. Salir"
+#define MENU_DEFAULT_TEXT "N/A"
+#define MENU_ERROR_TEXT "menu error: invalid pointer"
+
+typedef struct{
+  uint16_t xPos;
+  uint16_t yPos;
+}MenuPositions;
+
+enum menu1_1_items{
+  MENU_1_1_ITEM_1_INDEX,
+  MENU_1_1_ITEM_2_INDEX,
+  MENU_1_1_ITEM_3_INDEX,
+  MENU_1_1_ITEM_4_INDEX,
+  MENU_1_1_ITEM_5_INDEX,
+  MENU_1_1_ITEM_6_INDEX,
+  MENU_1_1_ITEM_7_INDEX,
 };
 
 enum menuLayers{
@@ -44,6 +50,7 @@ enum menuLayers{
 };
 
 enum menuIds{
+  MENU_ERROR,
   MENU_1,
   MENU_2,
   MENU_3,
@@ -70,9 +77,10 @@ typedef struct MenuItem {
 
 void initMenu();
 uint8_t updateMenu(bool middleBtn, bool leftBtn, bool rightBtn);
-void showChild(uint8_t childId);
-void highlightMenuItem(bool highlight, MenuItem* currentMenu, char items[][ITEMS_SIZE], unsigned long *lastMilis);
-void updateTimeItem(int addSeconds, int index, int divisor);
+void showChild();
+void highlightMenuItem(bool highlight, char items[][ITEMS_SIZE], unsigned long *lastMilis);
+uint8_t eventTimeMenu1_1(uint8_t selectedItem);
+void updateTimeItem(uint16_t addSeconds, uint8_t index, int divisor);
 void restartMenu();
 
 #endif
