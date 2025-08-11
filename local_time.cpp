@@ -5,13 +5,25 @@ SemaphoreHandle_t secondsMutex;
 
 char* daysOfWeek[] = {"Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"};
 
-static uint8_t day = MONDAY; //WIP
-static uint32_t seconds = 0; //WIP
-static uint16_t secondsCountdown = 14400; //WIP
-static uint16_t maxCountdown = 14400; //WIP
+static uint8_t day;
+static uint32_t seconds;
+static uint16_t secondsCountdown; 
+static uint16_t maxCountdown;
+
+static Preferences preferences;
 
 void initTime(){
   secondsMutex = xSemaphoreCreateMutex();
+
+  preferences.begin("day", false);
+  preferences.begin("sec", false);
+  preferences.begin("secCount", false);
+  preferences.begin("maxSecCount", false);
+
+  day = preferences.getUInt("day", MONDAY);
+  seconds = preferences.getUInt("sec", 0);
+  secondsCountdown = preferences.getUInt("secCount", FOUR_HOURS_TO_SEC);
+  maxCountdown = preferences.getUInt("maxSecCount", FOUR_HOURS_TO_SEC);
 
   xTaskCreatePinnedToCore(
       timerTask, "TimerTask", 2048, NULL, 1, &timerTaskHandle, 1                
@@ -23,7 +35,7 @@ void timerTask(void *parameter) {
     vTaskDelay(pdMS_TO_TICKS(1000));
 
     if (xSemaphoreTake(secondsMutex, portMAX_DELAY) == pdTRUE) {
-      if (seconds < MAX_SECONDS)
+      if (seconds < DAY_SECONDS)
         seconds++;
       else{
         seconds = 0; 
@@ -32,7 +44,12 @@ void timerTask(void *parameter) {
           day++;
         else
           day == MONDAY;
+
+        preferences.putUInt("day", day);
       }
+
+      if(seconds % ONE_HOURS_TO_SEC == 0)
+        preferences.putUInt("sec", seconds);
 
       if(secondsCountdown != 0)
         secondsCountdown--;
@@ -53,11 +70,12 @@ uint32_t getSeconds(){
   return temp;
 }
 
-void setSeconds(uint32_t new_seconds){
+void setSeconds(uint32_t newSeconds){
   if (xSemaphoreTake(secondsMutex, portMAX_DELAY) == pdTRUE) {
-    seconds = new_seconds;
+    seconds = newSeconds;
     xSemaphoreGive(secondsMutex);
   }
+  preferences.putUInt("sec", seconds - (seconds % ONE_HOURS_TO_SEC));
 }
 
 uint8_t getDay(){
@@ -76,6 +94,7 @@ void setDay(uint8_t new_day){
     day = new_day;
     xSemaphoreGive(secondsMutex);
   }
+  preferences.putUInt("day", day);
 }
 
 uint16_t getSecondsCountdown(){
@@ -87,6 +106,10 @@ uint16_t getSecondsCountdown(){
   }
 
   return temp;
+}
+
+void setMaxSecondsCountdown(uint16_t newSeconds){
+  maxCountdown == newSeconds;
 }
 
 void resetCountdown(){
