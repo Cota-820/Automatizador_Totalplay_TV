@@ -8,7 +8,7 @@
 #include "string.h"
 
 #define COUNTDOWN_MS_TO_WAIT 1000
-#define MENU_MS_TO_WAIT 30000
+#define MENU_MS_TO_WAIT 30000 //wip
 
 enum state{
   STATE_COUNTDOWN,
@@ -18,13 +18,13 @@ enum state{
 
 uint8_t state = STATE_COUNTDOWN;
 unsigned long currentMillis, lastMillisCountdown = 0, lastMillisMenu = 0;
-char screenText[128] = {0}; 
 
 void setup() {
   Serial.begin(115200);
 
   initTime();
   initMenu();
+  initChannels();
 
   pinMode(BUILD_IN_LED, OUTPUT);
   pinMode(LED_IR_PIN, OUTPUT);
@@ -34,9 +34,6 @@ void setup() {
   initDisplay(BUILD_IN_LED);  
 
   IrSender.begin(LED_IR_PIN);
-
-  //state = STATE_SEND;
-  state = STATE_COUNTDOWN;
 
   delay(1000); //TEMP
 }
@@ -100,18 +97,4 @@ void loop() {
   }
 
   updateButtons();
-}
-
-void stopSuspension(){
-  for(int i=0; i<2 ; i++){ //WIP change ok for channel num 
-    sendSignal(ADDRESS, BACK_CMMD, BACK_CMMD_NAME, 1000);
-    sendSignal(ADDRESS, OK_CMMD, OK_CMMD_NAME, 1000);
-  }
-}
-
-void sendSignal(uint16_t address, uint8_t command, char *signalName, int msToWait){
-  sprintf(screenText, "Enviado, espera... \n\nBoton: %s", signalName);
-  showTextOnScreen(screenText);
-  IrSender.sendNEC(ADDRESS, OK_CMMD, 0);
-  vTaskDelay(pdMS_TO_TICKS(msToWait));
 }

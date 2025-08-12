@@ -9,10 +9,11 @@
 #define HIGHLIGHT_ON_MS 500
 #define HIGHLIGHT_OFF_MS 200
 
-#define ITEMS_AMOUNT 15
-#define ITEMS_SIZE 25
+#define ITEM_ARRAY_SIZE 20
 
-#define ITEM_ARRAY_SIZE 15
+//para array de items
+#define ITEMS_AMOUNT ITEM_ARRAY_SIZE
+#define ITEMS_SIZE 25
 
 enum exitFlags{
   NO_CHANGE,
@@ -21,12 +22,8 @@ enum exitFlags{
   EXIT_COUNTDOWN,
 };
 
-#define MENU_1_TEXT  "\n\n1. Cambiar dia y hora"
-#define MENU_2_TEXT  "\n\n2. Cambiar canales"
-#define MENU_3_TEXT  "\n\n3. Cambiar tiempo de envio"
-#define MENU_4_TEXT  "\n\n4. Salir"
-#define MENU_DEFAULT_TEXT "N/A"
-#define MENU_ERROR_TEXT "menu error: invalid pointer"
+#define MENU_LAYER_1_X_POS (LETTER_LEN*0)
+#define MENU_LAYER_1_Y_POS (ROW_HIGHT*2)
 
 typedef struct{
   uint16_t xPos;
@@ -55,6 +52,7 @@ enum menuIds{
   MENU_2,
   MENU_3,
   MENU_4,
+  MENU_5,
   MENU_1_1,
   MENU_2_1,
   MENU_2_2,
@@ -62,7 +60,6 @@ enum menuIds{
 };
 
 typedef struct MenuItem {
-    char* title;
     const uint8_t id;
     const uint8_t layer;
     uint8_t selectedItem;
@@ -77,7 +74,7 @@ typedef struct MenuItem {
 
 void initMenu();
 uint8_t updateMenu(bool middleBtn, bool leftBtn, bool rightBtn);
-void showChild();
+void showMenu();
 void highlightMenuItem(bool highlight, char items[][ITEMS_SIZE], unsigned long *lastMilis);
 uint8_t eventTimeMenu1_1(uint8_t selectedItem);
 void updateTimeItem(uint16_t addSeconds, uint8_t index, int divisor);

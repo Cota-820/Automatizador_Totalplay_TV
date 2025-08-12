@@ -2,6 +2,8 @@
 #define IR_H
 
 #include <Arduino.h>
+#include <Preferences.h>
+#include "config.h"
 
 #define ADDRESS 0x3383
 
@@ -20,5 +22,11 @@
 #define NUM_7_CMD 0x67
 #define NUM_8_CMD 0x68
 #define NUM_9_CMD 0x69
+
+#define MAX_CHANNELS 7
+
+void initChannels();
+void stopSuspension();
+void sendSignal(uint16_t address, uint8_t command, char *signalName, int msToWait);
 
 #endif

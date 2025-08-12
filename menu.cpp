@@ -1,14 +1,15 @@
 #include "menu.h"
 
-MenuItem menuError = {MENU_ERROR_TEXT, MENU_ERROR, 0, 0, 0, {0}, {0}, NULL, NULL, NULL};
-MenuItem menuDayHour_1 = {MENU_1_TEXT, MENU_1, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
-MenuItem menuChannel_2 = {MENU_2_TEXT, MENU_2, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
-MenuItem menuSendTime_3 = {MENU_3_TEXT, MENU_3, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
-MenuItem menuExit_4 = {MENU_4_TEXT, MENU_4, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
-MenuItem menuDayHour_1_1 = {MENU_DEFAULT_TEXT, MENU_1_1, LAYER_2, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
-MenuItem menuChannel_2_1 = {MENU_DEFAULT_TEXT, MENU_2_1, LAYER_2, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
-MenuItem menuChannel_2_2 = {MENU_DEFAULT_TEXT, MENU_2_2, LAYER_3, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
-MenuItem menuSendTime_3_1 = {MENU_DEFAULT_TEXT, MENU_3_1, LAYER_2, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuError = {MENU_ERROR, 0, 0, 0, {0}, {0}, NULL, NULL, NULL};
+MenuItem menuDayHour_1 = {MENU_1, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuChannel_2 = {MENU_2, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuSendTime_3 = {MENU_3, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuReset_4 = {MENU_4, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuExit_5 = {MENU_5, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuDayHour_1_1 = {MENU_1_1, LAYER_2, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuChannel_2_1 = {MENU_2_1, LAYER_2, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuChannel_2_2 = {MENU_2_2, LAYER_3, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuItem menuSendTime_3_1 = {MENU_3_1, LAYER_2, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
 
 MenuPositions menu_1_1_positions[] = {{LETTER_LEN*2, ROW_HIGHT*0}, 
                                       {LETTER_LEN*5, ROW_HIGHT*0}, 
@@ -26,7 +27,7 @@ static uint32_t localSeconds = 0;
 static char items[ITEMS_AMOUNT][ITEMS_SIZE] = {0};
 
 void initMenu(){
-  menuDayHour_1.leftMenu = &menuExit_4;
+  menuDayHour_1.leftMenu = &menuExit_5;
   menuDayHour_1.rightMenu = &menuChannel_2;
   menuDayHour_1.childrenMenu = &menuDayHour_1_1;
 
@@ -35,11 +36,14 @@ void initMenu(){
   menuChannel_2.childrenMenu = &menuChannel_2_1;
 
   menuSendTime_3.leftMenu = &menuChannel_2;
-  menuSendTime_3.rightMenu = &menuExit_4;
+  menuSendTime_3.rightMenu = &menuReset_4;
   menuSendTime_3.childrenMenu = &menuSendTime_3_1;
 
-  menuExit_4.leftMenu = &menuSendTime_3;
-  menuExit_4.rightMenu = &menuDayHour_1;
+  menuReset_4.leftMenu = &menuSendTime_3;
+  menuReset_4.rightMenu = &menuExit_5;
+
+  menuExit_5.leftMenu = &menuReset_4;
+  menuExit_5.rightMenu = &menuDayHour_1;
 
   menuDayHour_1_1.parentMenu = &menuDayHour_1;
 
@@ -64,8 +68,7 @@ uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRight
   //mostrar menu si fue reiniciado
   if(currentMenu == NULL){
     currentMenu = &menuDayHour_1;
-    showTextOnScreen(currentMenu->title);
-    showButtonsOnScreen(CHOOSE);
+    showMenu();
     return UPDATED_SCREEN;
   }
 
@@ -73,15 +76,13 @@ uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRight
 
   switch(currentLayer){
     case LAYER_1:
-      //Serial.println("L 1");
       if (pressedLeftBtn || pressedRightBtn){
         currentMenu = pressedLeftBtn ? currentMenu->leftMenu : currentMenu->rightMenu;
 
         if (currentMenu == NULL)
           currentMenu = &menuError;
         
-        showTextOnScreen(currentMenu->title);
-        showButtonsOnScreen(CHOOSE);
+        showMenu();
         return UPDATED_SCREEN;
       }
 
@@ -89,7 +90,7 @@ uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRight
         if (currentMenu->id == MENU_1 || currentMenu->id == MENU_2 || currentMenu->id == MENU_3) {
           currentMenu = currentMenu->childrenMenu;
           currentMenu->selectedItem = 0;
-          showChild();
+          showMenu();
           itemHighlighted = false;
           return UPDATED_SCREEN;
         }
@@ -135,8 +136,28 @@ uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRight
   return NO_CHANGE;
 }
 
-void showChild(){
+void showMenu(){
   switch(currentMenu->id){
+    case MENU_1:
+      showTextOnScreenParams("1. Cambiar dia y hora", true, TEXT_WHITE, MENU_LAYER_1_X_POS, MENU_LAYER_1_Y_POS);
+      showButtonsOnScreen(CHOOSE);
+      break;
+    case MENU_2:
+      showTextOnScreenParams("2. Cambiar canales", true, TEXT_WHITE, MENU_LAYER_1_X_POS, MENU_LAYER_1_Y_POS);
+      showButtonsOnScreen(CHOOSE);
+      break;
+    case MENU_3:
+      showTextOnScreenParams("3. Cambiar tiempo de envio", true, TEXT_WHITE, MENU_LAYER_1_X_POS, MENU_LAYER_1_Y_POS);
+      showButtonsOnScreen(CHOOSE);
+      break;
+    case MENU_4:
+      showTextOnScreenParams("4. Restaurar valores predeterminados", true, TEXT_WHITE, MENU_LAYER_1_X_POS, MENU_LAYER_1_Y_POS);
+      showButtonsOnScreen(CHOOSE);
+      break;
+    case MENU_5:
+      showTextOnScreenParams("5. Salir", true, TEXT_WHITE, MENU_LAYER_1_X_POS, MENU_LAYER_1_Y_POS);
+      showButtonsOnScreen(CHOOSE);
+      break;
     case MENU_1_1:{
       localDay = getDay();
       localSeconds = getSeconds();
@@ -191,7 +212,7 @@ void showChild(){
       break;
     }
     default:
-      showTextOnScreen("error: invalid id");
+      showTextOnScreen("\n\nerror: invalid menu");
   }
 }
 
