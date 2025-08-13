@@ -26,46 +26,35 @@ void stopSuspension(){
 
   uint8_t digit1 = channels[day] / 100;        
   uint8_t digit2 = (channels[day] / 10) % 10;  
-  uint8_t digit3 = channels[day] % 10;    
+  uint8_t digit3 = channels[day] % 10; 
+
+  char digit1_str[5];
+  char digit2_str[5];
+  char digit3_str[5];
+
+  sprintf(digit1_str, "%u", digit1);
+  sprintf(digit2_str, "%u", digit2);
+  sprintf(digit3_str, "%u", digit3);
 
   for(int i=0; i<2 ; i++){ 
     sendSignal(ADDRESS, BACK_CMMD, BACK_CMMD_NAME, 1000);
-    sendSignal(ADDRESS, getNumCommd, OK_CMMD_NAME, 1000);
+    sendSignal(ADDRESS, getNumCommd(digit1), digit1_str, 1000);
+    sendSignal(ADDRESS, getNumCommd(digit1), digit2_str, 1000);
+    sendSignal(ADDRESS, getNumCommd(digit1), digit3_str, 1500);
   }
 }
 
 uint8_t getNumCommd(uint8_t digit){
-  switch (digit){
-    case 1:
-      return NUM_1_CMD;
-      break;
-    case 2:
-      return NUM_2_CMD;
-      break;
-    case 3:
-      return NUM_3_CMD;
-      break;
-    case 4:
-      return NUM_4_CMD;
-      break;
-    case 5:
-      return NUM_5_CMD;
-      break;
-    case 6:
-      return NUM_6_CMD;
-      break;
-    case 7:
-      return NUM_7_CMD;
-      break;
-    case 8:
-      return NUM_8_CMD;
-      break;
-    case 9:
-      return NUM_9_CMD;
-      break;
-    default: //0 or invalid digit
-      return NUM_0_CMD
-  }
+  static const uint8_t num_cmds[] = {
+    NUM_0_CMD, NUM_1_CMD, NUM_2_CMD, NUM_3_CMD, NUM_4_CMD,
+    NUM_5_CMD, NUM_6_CMD, NUM_7_CMD, NUM_8_CMD, NUM_9_CMD
+  };
+
+  if (digit <= 9)
+    return num_cmds[digit];
+  else 
+    return NUM_0_CMD; //invalid digit
+  
 }
 
 void sendSignal(uint16_t address, uint8_t command, char *signalName, int msToWait){

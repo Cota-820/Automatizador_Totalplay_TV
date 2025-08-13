@@ -129,7 +129,6 @@ uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRight
         itemHighlighted = true;
         return UPDATED_SCREEN;
       }
-      //Serial.println(currentMenu->selectedItem);
       break;
   }
   

@@ -57,6 +57,7 @@ enum menuIds{
   MENU_2_1,
   MENU_2_2,
   MENU_3_1,
+  MENU_4_1,
 };
 
 typedef struct MenuItem {
