@@ -4,7 +4,6 @@
 #include "local_time.h"
 #include "buttons.h"
 #include "menu.h"
-#include <IRremote.h>
 #include "string.h"
 
 #define COUNTDOWN_MS_TO_WAIT 1000
@@ -32,8 +31,6 @@ void setup() {
   initButtonPins();
 
   initDisplay(BUILD_IN_LED);  
-
-  IrSender.begin(LED_IR_PIN);
 
   delay(1000); //TEMP
 }

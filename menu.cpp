@@ -1,15 +1,15 @@
 #include "menu.h"
 
-MenuItem menuError = {MENU_ERROR, 0, 0, 0, {0}, {0}, NULL, NULL, NULL};
-MenuItem menuDayHour_1 = {MENU_1, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
-MenuItem menuChannel_2 = {MENU_2, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
-MenuItem menuSendTime_3 = {MENU_3, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
-MenuItem menuReset_4 = {MENU_4, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
-MenuItem menuExit_5 = {MENU_5, LAYER_1, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
-MenuItem menuDayHour_1_1 = {MENU_1_1, LAYER_2, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
-MenuItem menuChannel_2_1 = {MENU_2_1, LAYER_2, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
-MenuItem menuChannel_2_2 = {MENU_2_2, LAYER_3, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
-MenuItem menuSendTime_3_1 = {MENU_3_1, LAYER_2, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuStruct menuError = {MENU_ERROR, 0, 0, 0, 0, {0}, {0}, NULL, NULL, NULL};
+MenuStruct menuDayHour_1 = {MENU_1, LAYER_1, 0, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuStruct menuChannel_2 = {MENU_2, LAYER_1, 0, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuStruct menuSendTime_3 = {MENU_3, LAYER_1, 0, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuStruct menuReset_4 = {MENU_4, LAYER_1, 0, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuStruct menuExit_5 = {MENU_5, LAYER_1, 0, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuStruct menuDayHour_1_1 = {MENU_1_1, LAYER_2, 0, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuStruct menuChannel_2_1 = {MENU_2_1, LAYER_2, 0, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuStruct menuChannel_2_2 = {MENU_2_2, LAYER_3, 0, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
+MenuStruct menuSendTime_3_1 = {MENU_3_1, LAYER_2, 0, 0, 0, {0}, {0}, NULL, NULL, NULL, NULL};
 
 MenuPositions menu_1_1_positions[] = {{LETTER_LEN*2, ROW_HIGHT*0}, 
                                       {LETTER_LEN*5, ROW_HIGHT*0}, 
@@ -19,7 +19,24 @@ MenuPositions menu_1_1_positions[] = {{LETTER_LEN*2, ROW_HIGHT*0},
                                       {LETTER_LEN*2, ROW_HIGHT*3},
                                       {LETTER_LEN*7, ROW_HIGHT*4}};
 
-static MenuItem* currentMenu = NULL;
+MenuPositions menu_2_1_positions[] = {{LETTER_LEN*7, ROW_HIGHT*0},
+                                      {LETTER_LEN*7, ROW_HIGHT*1},
+                                      {LETTER_LEN*7, ROW_HIGHT*2},
+                                      {LETTER_LEN*7, ROW_HIGHT*3},
+                                      {LETTER_LEN*7, ROW_HIGHT*4},
+                                      {LETTER_LEN*7, ROW_HIGHT*5},
+                                      {LETTER_LEN*7, ROW_HIGHT*6}};
+
+MenuPositions menu_2_2_positions[] = {{LETTER_LEN*10, ROW_HIGHT*0},
+                                      {LETTER_LEN*11, ROW_HIGHT*0},
+                                      {LETTER_LEN*12, ROW_HIGHT*0},
+                                      {LETTER_LEN*10, ROW_HIGHT*1},
+                                      {LETTER_LEN*11, ROW_HIGHT*1},
+                                      {LETTER_LEN*12, ROW_HIGHT*1},
+                                      {LETTER_LEN*5, ROW_HIGHT*6},
+                                      {LETTER_LEN*12, ROW_HIGHT*6},};
+
+static MenuStruct* currentMenu = NULL;
 static bool menuShowed = false, itemHighlighted = false;
 static unsigned long lastMillisHighlight = 0;
 static uint8_t localDay = 0;
@@ -54,18 +71,21 @@ void initMenu(){
 
   menuSendTime_3_1.parentMenu = &menuSendTime_3;
 
-  size_t menu_size;
 
-  menu_size = sizeof(menu_1_1_positions) / sizeof(menu_1_1_positions[0]);
-  for(int i=0; i<menu_size; i++){
-    menuDayHour_1_1.itemXPos[i] = menu_1_1_positions[i].xPos;
-    menuDayHour_1_1.itemYPos[i] = menu_1_1_positions[i].yPos;
-  }  
-  menuDayHour_1_1.maxItems = menu_size-1;
+  setMenuItemPositions(&menuDayHour_1_1, menu_1_1_positions, sizeof(menu_1_1_positions) / sizeof(menu_1_1_positions[0]));
+  setMenuItemPositions(&menuChannel_2_1, menu_2_1_positions, sizeof(menu_2_1_positions) / sizeof(menu_2_1_positions[0]));
+  setMenuItemPositions(&menuChannel_2_2, menu_2_2_positions, sizeof(menu_2_2_positions) / sizeof(menu_2_2_positions[0]));
+}
+
+void setMenuItemPositions(MenuStruct *menu, MenuPositions *positions, size_t count) {
+  for (size_t i = 0; i < count; i++) {
+      menu->itemXPos[i] = positions[i].xPos;
+      menu->itemYPos[i] = positions[i].yPos;
+  }
+  menu->maxItems = count - 1;
 }
 
 uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRightBtn){
-  //mostrar menu si fue reiniciado
   if(currentMenu == NULL){
     currentMenu = &menuDayHour_1;
     showMenu();
@@ -89,9 +109,7 @@ uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRight
       else if (pressedMiddleBtn){
         if (currentMenu->id == MENU_1 || currentMenu->id == MENU_2 || currentMenu->id == MENU_3) {
           currentMenu = currentMenu->childrenMenu;
-          currentMenu->selectedItem = 0;
           showMenu();
-          itemHighlighted = false;
           return UPDATED_SCREEN;
         }
         else
@@ -100,6 +118,7 @@ uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRight
       break;
     
     case LAYER_2:
+    case LAYER_3:
       unsigned long interval = itemHighlighted ? HIGHLIGHT_ON_MS : HIGHLIGHT_OFF_MS;
 
       if (millis() - lastMillisHighlight > interval) {
@@ -107,12 +126,8 @@ uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRight
           highlightMenuItem(itemHighlighted, items, &lastMillisHighlight);
       }
 
-      if (pressedMiddleBtn){
-        if (currentMenu->id == MENU_1_1){
-          return eventTimeMenu1_1(currentMenu->selectedItem);
-        }
-        return EXIT_COUNTDOWN; //temp
-      }
+      if (pressedMiddleBtn)
+        return menuEvent();
       
       else if (pressedLeftBtn || pressedRightBtn){
         highlightMenuItem(false, items, &lastMillisHighlight);
@@ -136,6 +151,9 @@ uint8_t updateMenu(bool pressedMiddleBtn, bool pressedLeftBtn, bool pressedRight
 }
 
 void showMenu(){
+  currentMenu->selectedItem = 0;
+  itemHighlighted = false;
+
   switch(currentMenu->id){
     case MENU_1:
       showTextOnScreenParams("1. Cambiar dia y hora", true, TEXT_WHITE, MENU_LAYER_1_X_POS, MENU_LAYER_1_Y_POS);
@@ -210,6 +228,51 @@ void showMenu(){
       showButtonsOnScreen(CHOOSE);
       break;
     }
+    case MENU_2_1:
+      clearScreen();
+      for(int i=0; i<=currentMenu->maxItems; i++){
+        sprintf(items[i], daysOfWeek[i]);
+        showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
+      }
+      showButtonsOnScreen(CHOOSE);
+      break;
+    case MENU_2_2:
+      clearScreen();
+
+      uint8_t i = 0, week=currentMenu->tempValue;
+
+      showTextOnScreenParams("Semana 1:", false, TEXT_WHITE, 0, currentMenu->itemYPos[i]);
+      sprintf(items[i], "%u", channels[0][week] / 100);
+      showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
+      i++;
+      sprintf(items[i], "%u",(channels[0][week] / 10) % 10);
+      showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
+      i++;
+      sprintf(items[i], "%u",channels[0][week] % 10;
+      showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
+      i++;
+
+      showTextOnScreenParams("Semana 2:", false, TEXT_WHITE, 0, currentMenu->itemYPos[i]);
+      sprintf(items[i], "%u", channels[1][week] / 100);
+      showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
+      i++;
+      sprintf(items[i], "%u",(channels[1][week] / 10) % 10);
+      showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
+      i++;
+      sprintf(items[i], "%u",channels[1][week] % 10;
+      showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
+      i++;
+
+      sprintf(items[i], "Guardar y regresar");
+      showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
+      i++;
+
+      sprintf(items[i], "Regresar");
+      showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
+
+      showButtonsOnScreen(CHOOSE);
+
+      break;
     default:
       showTextOnScreen("\n\nerror: invalid menu");
   }
@@ -226,43 +289,49 @@ void highlightMenuItem(bool highlight, char items[][ITEMS_SIZE], unsigned long *
   *lastMilis = millis();
 }
 
-uint8_t eventTimeMenu1_1(uint8_t selectedItem){
+uint8_t menuEvent() {
+  switch (currentMenu->id) {
+    case MENU_1_1:
+      return handleMenu1_1(currentMenu->selectedItem);
+    case MENU_2_1:
+      currentMenu->childrenMenu->tempValue = currentMenu->selectedItem;
+      currentMenu = currentMenu->childrenMenu;
+      showMenu();
+      return UPDATED_SCREEN;
+    default:
+      return EXIT_COUNTDOWN; //temp
+  }
+}
+
+uint8_t handleMenu1_1(uint8_t selectedItem){
   switch(selectedItem) {
-    case MENU_1_1_ITEM_1_INDEX: //horas
-      updateTimeItem(3600, MENU_1_1_ITEM_1_INDEX, 3600);
+    case 0: //horas
+      updateTimeItem(3600, 0, 3600);
       return UPDATED_SCREEN;
-      break;
-    case MENU_1_1_ITEM_2_INDEX: //minutos
-      updateTimeItem(60, MENU_1_1_ITEM_2_INDEX, 60);
+    case 1: //minutos
+      updateTimeItem(60, 1, 60);
       return UPDATED_SCREEN;
-      break;
-    case MENU_1_1_ITEM_3_INDEX: //sec
-      updateTimeItem(1, MENU_1_1_ITEM_3_INDEX, 1);
+    case 2: //sec
+      updateTimeItem(1, 2, 1);
       return UPDATED_SCREEN;
-      break;
-    case MENU_1_1_ITEM_4_INDEX: //day
+    case 3: //day
       localDay++;
       localDay %= 7;
-      sprintf(items[MENU_1_1_ITEM_4_INDEX], daysOfWeek[localDay]);
-      clearScreenText(currentMenu->itemXPos[MENU_1_1_ITEM_4_INDEX], currentMenu->itemYPos[MENU_1_1_ITEM_4_INDEX], 11);
+      sprintf(items[3], daysOfWeek[localDay]);
+      clearScreenText(currentMenu->itemXPos[3], currentMenu->itemYPos[3], 11);
       highlightMenuItem(true, items, &lastMillisHighlight);
       return UPDATED_SCREEN;
-      break;
-    case MENU_1_1_ITEM_5_INDEX: //guardar
+    case 4: //guardar
       setSeconds(localSeconds);
       setDay(localDay);
       return EXIT_COUNTDOWN;
-      break;
-    case MENU_1_1_ITEM_6_INDEX: //guardar y enviar
+    case 5: //guardar y enviar
       setSeconds(localSeconds);
       setDay(localDay);
       return EXIT_SEND_SIGNAL;
-      break;
-    case MENU_1_1_ITEM_7_INDEX: //salir
+    case 6: //salir
       return EXIT_COUNTDOWN;
-      break;
   }
-  return NO_CHANGE;
 }
 
 void updateTimeItem(uint16_t addSeconds, uint8_t itemIndex, int divisor) {

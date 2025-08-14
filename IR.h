@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 #include <Preferences.h>
+#include "display.h"
+#include "local_time.h"
 #include "config.h"
 
 #define ADDRESS 0x3383
@@ -24,9 +26,14 @@
 #define NUM_9_CMD 0x69
 
 #define MAX_CHANNELS 7
+#define WEEKS 4
+
+extern uint16_t channels[WEEKS][MAX_CHANNELS];
 
 void initChannels();
+void saveChannels(uint8_t week, uint16_t channels_array[]);
 void stopSuspension();
+uint8_t getNumCommd(uint8_t digit);
 void sendSignal(uint16_t address, uint8_t command, char *signalName, int msToWait);
 
 #endif

@@ -1,24 +1,35 @@
 #include "IR.h"
-#include "local_time.h"
+#include <IRremote.h>
 
-char screenText[128] = {0}; 
-static uint16_t channels[MAX_CHANNELS] = {DEFAULT_CHNNL_MON, 
-                                          DEFAULT_CHNNL_THUS,
-                                          DEFAULT_CHNNL_WEND,
-                                          DEFAULT_CHNNL_THURS,
-                                          DEFAULT_CHNNL_FRYD,
-                                          DEFAULT_CHNNL_SAT,
-                                          DEFAULT_CHNNL_SUN,};
+static char screenText[128] = {0}; 
+uint16_t channels[WEEKS][MAX_CHANNELS] = {{DEFAULT_CHNNL_MON, DEFAULT_CHNNL_THUS,DEFAULT_CHNNL_WEND,
+                                          DEFAULT_CHNNL_THURS,  DEFAULT_CHNNL_FRYD,  DEFAULT_CHNNL_SAT, DEFAULT_CHNNL_SUN},
+                                          {DEFAULT_CHNNL_MON, DEFAULT_CHNNL_THUS,DEFAULT_CHNNL_WEND,
+                                          DEFAULT_CHNNL_THURS,  DEFAULT_CHNNL_FRYD,  DEFAULT_CHNNL_SAT, DEFAULT_CHNNL_SUN},
+                                          {DEFAULT_CHNNL_MON, DEFAULT_CHNNL_THUS,DEFAULT_CHNNL_WEND,
+                                          DEFAULT_CHNNL_THURS,  DEFAULT_CHNNL_FRYD,  DEFAULT_CHNNL_SAT, DEFAULT_CHNNL_SUN},
+                                          {DEFAULT_CHNNL_MON, DEFAULT_CHNNL_THUS,DEFAULT_CHNNL_WEND,
+                                          DEFAULT_CHNNL_THURS,  DEFAULT_CHNNL_FRYD,  DEFAULT_CHNNL_SAT, DEFAULT_CHNNL_SUN},};
 
 
 static Preferences preferences;
 
 void initChannels(){
-  preferences.begin("channels", false);
+  IrSender.begin(LED_IR_PIN);
 
-  if (preferences.getBytesLength("channels") != 0) {
-    preferences.getBytes("channels", channels, sizeof(channels));
+  preferences.begin("channel", false);
+
+  if (preferences.getBytesLength("channel") != 0) {
+    preferences.getBytes("channel", channels, sizeof(channels));
   }
+}
+
+void saveChannels(uint8_t week, uint16_t channels_array[]){
+  if (week >= WEEKS) return;
+
+  memcpy(channels[week], channels_array, MAX_CHANNELS * sizeof(uint16_t));
+
+  preferences.putBytes("channel", channels, sizeof(channels));
 }
 
 void stopSuspension(){
@@ -36,12 +47,12 @@ void stopSuspension(){
   sprintf(digit2_str, "%u", digit2);
   sprintf(digit3_str, "%u", digit3);
 
-  for(int i=0; i<2 ; i++){ 
+  //for(int i=0; i<2 ; i++){ 
     sendSignal(ADDRESS, BACK_CMMD, BACK_CMMD_NAME, 1000);
     sendSignal(ADDRESS, getNumCommd(digit1), digit1_str, 1000);
     sendSignal(ADDRESS, getNumCommd(digit1), digit2_str, 1000);
     sendSignal(ADDRESS, getNumCommd(digit1), digit3_str, 1500);
-  }
+  //}
 }
 
 uint8_t getNumCommd(uint8_t digit){
