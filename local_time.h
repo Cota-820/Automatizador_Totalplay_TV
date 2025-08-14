@@ -11,6 +11,8 @@
 #define THREE_HOURS_TO_SEC 10800
 #define FOUR_HOURS_TO_SEC 14400
 
+#define MAX_WEEK 3
+
 enum day{
   MONDAY,
   TUESDAY,
@@ -32,6 +34,8 @@ uint32_t getSeconds();
 void setSeconds(uint32_t new_seconds);
 uint8_t getDay();
 void setDay(uint8_t new_day);
+uint8_t getWeek();
+void setWeek(uint8_t new_week);
 uint16_t getSecondsCountdown();
 void setMaxSecondsCountdown(uint16_t newSeconds);
 void resetCountdown();

@@ -6,6 +6,7 @@ SemaphoreHandle_t secondsMutex;
 char* daysOfWeek[] = {"Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"};
 
 static uint8_t day;
+static uint8_t week;
 static uint32_t seconds;
 static uint16_t secondsCountdown; 
 static uint16_t maxCountdown;
@@ -17,10 +18,12 @@ void initTime(){
 
   preferences.begin("day", false);
   preferences.begin("sec", false);
+  preferences.begin("week", false);
   preferences.begin("secCount", false);
   preferences.begin("maxSecCount", false);
 
   day = preferences.getUInt("day", MONDAY);
+  week = preferences.getUInt("week", 1);
   seconds = preferences.getUInt("sec", 0);
   secondsCountdown = preferences.getUInt("secCount", FOUR_HOURS_TO_SEC);
   maxCountdown = preferences.getUInt("maxSecCount", FOUR_HOURS_TO_SEC);
@@ -42,8 +45,11 @@ void timerTask(void *parameter) {
 
         if(day != SUNDAY)
           day++;
-        else
+        else {
           day == MONDAY;
+          week++;
+          week %= MAX_WEEK;
+        }
 
         preferences.putUInt("day", day);
       }
@@ -95,6 +101,25 @@ void setDay(uint8_t new_day){
     xSemaphoreGive(secondsMutex);
   }
   preferences.putUInt("day", day);
+}
+
+uint8_t getWeek(){
+  uint8_t temp;
+
+  if (xSemaphoreTake(secondsMutex, portMAX_DELAY) == pdTRUE) {
+    temp = week;
+    xSemaphoreGive(secondsMutex);
+  }
+
+  return temp;
+}
+
+void setWeek(uint8_t new_week){
+  if (xSemaphoreTake(secondsMutex, portMAX_DELAY) == pdTRUE) {
+    week = new_week;
+    xSemaphoreGive(secondsMutex);
+  }
+  preferences.putUInt("week", week);
 }
 
 uint16_t getSecondsCountdown(){

@@ -34,7 +34,7 @@
 void initDisplay(uint8_t warningLed);
 void clearScreen();
 void clearScreenText(uint16_t x_pos, uint16_t y_pos, uint16_t characterNum);
-void showTimeOnScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day);
+void showMainScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day, uint8_t week);
 void showButtonsOnScreen(uint8_t buttonText);
 void showTextOnScreen(char *str);
 void showTextOnScreenParams(char *str, bool clearScreen, uint8_t color, uint16_t x_pos, uint16_t y_pos);

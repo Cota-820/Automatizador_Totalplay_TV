@@ -54,12 +54,10 @@ void loop() {
         lastMillisCountdown = currentMillis;
 
         uint16_t secondsCountdown = getSecondsCountdown();
-        uint32_t seconds = getSeconds();
-        uint8_t day = getDay();
         
         //si no acabo el tiempo, actualiza pantalla
         if(secondsCountdown != 0)
-          showTimeOnScreen(secondsCountdown, seconds, day);
+          showMainScreen(secondsCountdown, getSeconds(), getDay());
         else
           state = STATE_SEND;
       }

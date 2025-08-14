@@ -15,6 +15,7 @@ MenuPositions menu_1_1_positions[] = {{LETTER_LEN*2, ROW_HIGHT*0},
                                       {LETTER_LEN*5, ROW_HIGHT*0}, 
                                       {LETTER_LEN*8, ROW_HIGHT*0}, 
                                       {LETTER_LEN*12, ROW_HIGHT*0},
+                                      {LETTER_LEN*9, ROW_HIGHT*1},
                                       {LETTER_LEN*7, ROW_HIGHT*2},
                                       {LETTER_LEN*2, ROW_HIGHT*3},
                                       {LETTER_LEN*7, ROW_HIGHT*4}};
@@ -39,7 +40,7 @@ MenuPositions menu_2_2_positions[] = {{LETTER_LEN*10, ROW_HIGHT*0},
 static MenuStruct* currentMenu = NULL;
 static bool menuShowed = false, itemHighlighted = false;
 static unsigned long lastMillisHighlight = 0;
-static uint8_t localDay = 0;
+static uint8_t localDay = 0, localWeek = 0;
 static uint32_t localSeconds = 0;
 static char items[ITEMS_AMOUNT][ITEMS_SIZE] = {0};
 
@@ -178,10 +179,7 @@ void showMenu(){
     case MENU_1_1:{
       localDay = getDay();
       localSeconds = getSeconds();
-
-      uint8_t hours = localSeconds / 3600;
-      uint8_t minutes = (localSeconds % 3600) / 60;
-      uint8_t remainingSeconds = localSeconds % 60;
+      localWeek = getWeek();
 
       uint8_t i = 0;
 
@@ -189,41 +187,41 @@ void showMenu(){
 
       clearScreen();
 
-      sprintf(items[i], "%02d", hours);
+      sprintf(items[i], "%02d", localSeconds / 3600);
       sprintf(buffer, items[i]);
       strcat(buffer, ":");
       showTextOnScreenParams(buffer, false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
       i++;
       
-      sprintf(items[i], "%02d", minutes);
+      sprintf(items[i], "%02d", (localSeconds % 3600) / 60);
       sprintf(buffer, items[i]);
       strcat(buffer, ":");
       showTextOnScreenParams(buffer, false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
       i++;
 
-      sprintf(items[i], "%02d", remainingSeconds);
-      sprintf(buffer, items[i]);
-      showTextOnScreenParams(buffer, false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
+      sprintf(items[i], "%02d", localSeconds % 60);
+      showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
       i++;
 
       sprintf(items[i], "%s", daysOfWeek[localDay]);
-      sprintf(buffer, items[i]);
-      showTextOnScreenParams(buffer, false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
+      showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
+      i++;
+
+      showTextOnScreenParams("Semana:", false, TEXT_WHITE, LETTER_LEN*9, ROW_HIGHT*1);
+      sprintf(items[i], "%u", localWeek);
+      showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
       i++;
 
       sprintf(items[i], "Guardar");
-      sprintf(buffer, items[i]);
-      showTextOnScreenParams(buffer, false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
+      showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
       i++;
 
       sprintf(items[i], "Guardar y Enviar");
-      sprintf(buffer, items[i]);
-      showTextOnScreenParams(buffer, false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
+      showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
       i++;
 
       sprintf(items[i], "Salir");
-      sprintf(buffer, items[i]);
-      showTextOnScreenParams(buffer, false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
+      showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
 
       showButtonsOnScreen(CHOOSE);
       break;
@@ -321,15 +319,21 @@ uint8_t handleMenu1_1(uint8_t selectedItem){
       clearScreenText(currentMenu->itemXPos[3], currentMenu->itemYPos[3], 11);
       highlightMenuItem(true, items, &lastMillisHighlight);
       return UPDATED_SCREEN;
-    case 4: //guardar
+    case 4;
+      localWeek++;
+      localWeek %= MAX_WEEK;
+      sprintf(items[4], "%u", localWeek);
+      highlightMenuItem(true, items, &lastMillisHighlight);
+      return UPDATED_SCREEN;
+    case 5: //guardar
       setSeconds(localSeconds);
       setDay(localDay);
       return EXIT_COUNTDOWN;
-    case 5: //guardar y enviar
+    case 6: //guardar y enviar
       setSeconds(localSeconds);
       setDay(localDay);
       return EXIT_SEND_SIGNAL;
-    case 6: //salir
+    case 7: //salir
       return EXIT_COUNTDOWN;
   }
 }

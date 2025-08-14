@@ -29,25 +29,28 @@ void clearScreenText(uint16_t x_pos, uint16_t y_pos, uint16_t characterNum){
   display.display();
 }
 
-void showTimeOnScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day){
+void showMainScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day, uint8_t week){
   if (secondsCountdown < 0) secondsCountdown = 0;
 
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
 
-  display.setCursor(0, ROW_1);
-
+  display.setCursor(0, ROW_HIGHT*0);
   display.print(daysOfWeek[day]);
+
+  display.setCursor(LETTER_LEN*12, ROW_HIGHT*0);
+  //
 
   uint8_t hours = seconds / 3600;
   uint8_t minutes = (seconds % 3600) / 60;
   uint8_t remainingSeconds = seconds % 60;
-  display.setCursor(LETTER_LEN*10, ROW_1);
+  display.setCursor(LETTER_LEN*10, ROW_HIGHT*1);
   display.print(hours);
   display.print(":");
   display.print(minutes);
   display.print(":");
   display.print(remainingSeconds);
+
 
   uint8_t hoursCountdown = secondsCountdown / 3600;
   uint8_t minutesCountdown = (secondsCountdown % 3600) / 60;
