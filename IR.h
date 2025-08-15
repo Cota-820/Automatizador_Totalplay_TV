@@ -28,8 +28,6 @@
 #define MAX_CHANNELS 7
 #define WEEKS 4
 
-extern uint16_t channels[WEEKS][MAX_CHANNELS];
-
 void initChannels();
 void saveChannels(uint8_t week, uint16_t channels_array[]);
 void stopSuspension();

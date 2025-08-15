@@ -2,7 +2,7 @@
 #include <IRremote.h>
 
 static char screenText[128] = {0}; 
-uint16_t channels[WEEKS][MAX_CHANNELS] = {{DEFAULT_CHNNL_MON, DEFAULT_CHNNL_THUS,DEFAULT_CHNNL_WEND,
+static uint16_t channels[WEEKS][MAX_CHANNELS] = {{DEFAULT_CHNNL_MON, DEFAULT_CHNNL_THUS,DEFAULT_CHNNL_WEND,
                                           DEFAULT_CHNNL_THURS,  DEFAULT_CHNNL_FRYD,  DEFAULT_CHNNL_SAT, DEFAULT_CHNNL_SUN},
                                           {DEFAULT_CHNNL_MON, DEFAULT_CHNNL_THUS,DEFAULT_CHNNL_WEND,
                                           DEFAULT_CHNNL_THURS,  DEFAULT_CHNNL_FRYD,  DEFAULT_CHNNL_SAT, DEFAULT_CHNNL_SUN},
@@ -34,10 +34,11 @@ void saveChannels(uint8_t week, uint16_t channels_array[]){
 
 void stopSuspension(){
   uint8_t day = getDay();
+  uint8_t week = getWeek();
 
-  uint8_t digit1 = channels[day] / 100;        
-  uint8_t digit2 = (channels[day] / 10) % 10;  
-  uint8_t digit3 = channels[day] % 10; 
+  uint8_t digit1 = channels[week][day] / 100;        
+  uint8_t digit2 = (channels[week][day] / 10) % 10;  
+  uint8_t digit3 = channels[week][day] % 10; 
 
   char digit1_str[5];
   char digit2_str[5];

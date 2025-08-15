@@ -39,7 +39,8 @@ void showMainScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day, ui
   display.print(daysOfWeek[day]);
 
   display.setCursor(LETTER_LEN*12, ROW_HIGHT*0);
-  //
+  display.print("Semana: ");
+  display.print(week);
 
   uint8_t hours = seconds / 3600;
   uint8_t minutes = (seconds % 3600) / 60;
