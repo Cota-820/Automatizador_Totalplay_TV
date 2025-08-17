@@ -16,10 +16,9 @@ MenuPositions menu_1_1_positions[] = {{LETTER_LEN*2, ROW_HIGHT*0},
                                       {LETTER_LEN*5, ROW_HIGHT*0}, 
                                       {LETTER_LEN*8, ROW_HIGHT*0}, 
                                       {LETTER_LEN*12, ROW_HIGHT*0},
-                                      {LETTER_LEN*9, ROW_HIGHT*1},
+                                      {(LETTER_LEN*13)+3, ROW_HIGHT*1},
                                       {LETTER_LEN*7, ROW_HIGHT*3},
-                                      {LETTER_LEN*2, ROW_HIGHT*4},
-                                      {LETTER_LEN*7, ROW_HIGHT*5}};
+                                      {(LETTER_LEN*6)+3, ROW_HIGHT*4}};
 
 MenuPositions menu_2_1_positions[] = {{LETTER_LEN*0, ROW_HIGHT*1},
                                       {LETTER_LEN*7, ROW_HIGHT*1},
@@ -180,23 +179,23 @@ void showMenu(){
   switch(currentMenu->id){
     case MENU_1:
       showTextOnScreenParams("1. Cambiar dia y hora", true, TEXT_WHITE, MENU_LAYER_1_X_POS, MENU_LAYER_1_Y_POS);
-      showButtonsOnScreen(CHOOSE);
+      showButtonsOnScreen();
       break;
     case MENU_2:
       showTextOnScreenParams("2. Cambiar canales", true, TEXT_WHITE, MENU_LAYER_1_X_POS, MENU_LAYER_1_Y_POS);
-      showButtonsOnScreen(CHOOSE);
+      showButtonsOnScreen();
       break;
     case MENU_3:
       showTextOnScreenParams("3. Cambiar tiempo de envio", true, TEXT_WHITE, MENU_LAYER_1_X_POS, MENU_LAYER_1_Y_POS);
-      showButtonsOnScreen(CHOOSE);
+      showButtonsOnScreen();
       break;
     case MENU_4:
       showTextOnScreenParams("4. Restaurar valores predeterminados", true, TEXT_WHITE, MENU_LAYER_1_X_POS, MENU_LAYER_1_Y_POS);
-      showButtonsOnScreen(CHOOSE);
+      showButtonsOnScreen();
       break;
     case MENU_5:
       showTextOnScreenParams("5. Salir", true, TEXT_WHITE, MENU_LAYER_1_X_POS, MENU_LAYER_1_Y_POS);
-      showButtonsOnScreen(CHOOSE);
+      showButtonsOnScreen();
       break;
     case MENU_1_1:{
       localDay = getDay();
@@ -230,7 +229,7 @@ void showMenu(){
       showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
       i++;
 
-      showTextOnScreenParams("Semana:", false, TEXT_WHITE, LETTER_LEN*2, ROW_HIGHT*1);
+      showTextOnScreenParams("Semana:", false, TEXT_WHITE, LETTER_LEN*6.5, ROW_HIGHT*1);
       sprintf(items[i], "%u", localWeek+1);
       showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
       i++;
@@ -239,14 +238,10 @@ void showMenu(){
       showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
       i++;
 
-      sprintf(items[i], "Guardar y Enviar");
-      showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
-      i++;
-
-      sprintf(items[i], "Salir");
+      sprintf(items[i], "Regresar");
       showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
 
-      showButtonsOnScreen(CHOOSE);
+      showButtonsOnScreen();
       break;
     }
     case MENU_2_1:
@@ -261,7 +256,7 @@ void showMenu(){
           showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
         }
       }
-      showButtonsOnScreen(CHOOSE);
+      showButtonsOnScreen();
       break;
     case MENU_2_2:{
       clearScreen();
@@ -326,7 +321,7 @@ void showMenu(){
       sprintf(items[i], "Regresar");
       showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
 
-      showButtonsOnScreen(CHOOSE);
+      showButtonsOnScreen();
 
       break;
     }
@@ -355,7 +350,7 @@ void showMenu(){
       showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
       i++;
 
-      showButtonsOnScreen(CHOOSE);
+      showButtonsOnScreen();
 
       break;
     }
@@ -375,7 +370,7 @@ void showMenu(){
       showTextOnScreenParams(items[i], false, TEXT_WHITE, currentMenu->itemXPos[i], currentMenu->itemYPos[i]);
       i++;
 
-      showButtonsOnScreen(CHOOSE);
+      showButtonsOnScreen();
 
       break;
     }
@@ -475,13 +470,10 @@ uint8_t handleMenu1_1(uint8_t selectedItem){
       setDay(localDay);
       setWeek(localWeek);
       return EXIT_COUNTDOWN;
-    case 6: //guardar y enviar
-      setSeconds(localSeconds);
-      setDay(localDay);
-      setWeek(localWeek);
-      return EXIT_SEND_SIGNAL;
-    case 7: //salir
-      return EXIT_COUNTDOWN;
+    case 6: //regresar
+      currentMenu = currentMenu->parentMenu;
+      showMenu();
+      return UPDATED_SCREEN;
   }
 }
 

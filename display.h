@@ -18,15 +18,12 @@
 #define ROW_HIGHT 8
 #define LETTER_LEN 6
 
-#define CHOOSE 0
-#define CHANGE 1
-
 
 void initDisplay(uint8_t warningLed);
 void clearScreen();
 void clearScreenText(uint16_t x_pos, uint16_t y_pos, uint16_t characterNum);
 void showMainScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day, uint8_t week);
-void showButtonsOnScreen(uint8_t buttonText);
+void showButtonsOnScreen();
 void showTextOnScreen(char *str);
 void showTextOnScreenParams(char *str, bool clearScreen, uint8_t color, uint16_t x_pos, uint16_t y_pos);
 
