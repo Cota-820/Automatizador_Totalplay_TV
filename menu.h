@@ -1,10 +1,13 @@
 #ifndef MENU_h
 #define MENU_H
 
+#include "nvs_flash.h"
+#include "esp_system.h"
 #include "display.h"
 #include "buttons.h"
 #include "local_time.h"
 #include "string.h"
+#include "IR.h"
 
 #define HIGHLIGHT_ON_MS 500
 #define HIGHLIGHT_OFF_MS 200
@@ -72,6 +75,7 @@ void showMenu();
 void highlightMenuItem(bool highlight, char items[][ITEMS_SIZE], unsigned long *lastMilis);
 uint8_t menuEvent();
 uint8_t handleMenu1_1(uint8_t selectedItem);
+uint8_t handleMenu2_2();
 void updateTimeItem(uint16_t addSeconds, uint8_t index, int divisor);
 void restartMenu();
 

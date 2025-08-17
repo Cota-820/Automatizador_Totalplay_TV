@@ -11,7 +11,9 @@
 #define THREE_HOURS_TO_SEC 10800
 #define FOUR_HOURS_TO_SEC 14400
 
-#define MAX_WEEK 3
+#define WEEK_LIMIT 4
+
+#define DAYS_IN_WEEK 7
 
 enum day{
   MONDAY,
@@ -22,6 +24,7 @@ enum day{
   SATURDAY,
   SUNDAY
 };
+
 
 extern TaskHandle_t timerTaskHandle;
 extern SemaphoreHandle_t timerMutex;

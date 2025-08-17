@@ -7,7 +7,7 @@
 #include "string.h"
 
 #define COUNTDOWN_MS_TO_WAIT 1000
-#define MENU_MS_TO_WAIT 30000 //wip
+#define MENU_MS_TO_WAIT 60000 //wip
 
 enum state{
   STATE_COUNTDOWN,
@@ -57,7 +57,7 @@ void loop() {
         
         //si no acabo el tiempo, actualiza pantalla
         if(secondsCountdown != 0)
-          showMainScreen(secondsCountdown, getSeconds(), getDay());
+          showMainScreen(secondsCountdown, getSeconds(), getDay(), getWeek());
         else
           state = STATE_SEND;
       }

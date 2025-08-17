@@ -19,14 +19,14 @@ void initTime(){
   preferences.begin("day", false);
   preferences.begin("sec", false);
   preferences.begin("week", false);
-  preferences.begin("secCount", false);
   preferences.begin("maxSecCount", false);
 
   day = preferences.getUInt("day", MONDAY);
-  week = preferences.getUInt("week", 1);
+  week = preferences.getUInt("week", 0);
   seconds = preferences.getUInt("sec", 0);
-  secondsCountdown = preferences.getUInt("secCount", FOUR_HOURS_TO_SEC);
   maxCountdown = preferences.getUInt("maxSecCount", FOUR_HOURS_TO_SEC);
+
+  secondsCountdown = maxCountdown;
 
   xTaskCreatePinnedToCore(
       timerTask, "TimerTask", 2048, NULL, 1, &timerTaskHandle, 1                
@@ -48,7 +48,8 @@ void timerTask(void *parameter) {
         else {
           day == MONDAY;
           week++;
-          week %= MAX_WEEK;
+          week %= WEEK_LIMIT;
+          preferences.putUInt("week", week);
         }
 
         preferences.putUInt("day", day);
@@ -134,7 +135,13 @@ uint16_t getSecondsCountdown(){
 }
 
 void setMaxSecondsCountdown(uint16_t newSeconds){
-  maxCountdown == newSeconds;
+  maxCountdown = newSeconds;
+  if (xSemaphoreTake(secondsMutex, portMAX_DELAY) == pdTRUE) {
+    if (secondsCountdown > maxCountdown)
+      secondsCountdown = maxCountdown;
+    xSemaphoreGive(secondsMutex);
+  }
+  preferences.putUInt("maxSecCount", maxCountdown);
 }
 
 void resetCountdown(){

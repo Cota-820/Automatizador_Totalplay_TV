@@ -18,7 +18,7 @@ void updateButtons() {
   updateButton(btnLeft);
   updateButton(btnRight);
 
-  vTaskDelay(pdMS_TO_TICKS(25)); // antirrebote
+  vTaskDelay(pdMS_TO_TICKS(30)); // antirrebote
 }
 
 void updateButton(Button &btn) {
@@ -43,13 +43,13 @@ bool wasPressed(Button &btn) {
   if (btn.checkPresstime && btn.currentState == LOW) {
     unsigned long now = millis();
 
-    if (!btn.longPressActive && (now - btn.pressStartTime >= 1000)) {
+    if (!btn.longPressActive && (now - btn.pressStartTime >= WAIT_LONG_PRESS_MS)) {
       btn.longPressActive = true;
       btn.lastRepeatTime = now;
       return true;
     }
 
-    if (btn.longPressActive && (now - btn.lastRepeatTime >= 200)) {
+    if (btn.longPressActive && (now - btn.lastRepeatTime >= BUTTON_AUTOCLICK_MS)) {
       btn.lastRepeatTime = now;
       return true;
     }

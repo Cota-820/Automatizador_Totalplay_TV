@@ -38,34 +38,35 @@ void showMainScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day, ui
   display.setCursor(0, ROW_HIGHT*0);
   display.print(daysOfWeek[day]);
 
-  display.setCursor(LETTER_LEN*12, ROW_HIGHT*0);
-  display.print("Semana: ");
-  display.print(week);
-
   uint8_t hours = seconds / 3600;
   uint8_t minutes = (seconds % 3600) / 60;
   uint8_t remainingSeconds = seconds % 60;
-  display.setCursor(LETTER_LEN*10, ROW_HIGHT*1);
+  display.setCursor(LETTER_LEN*11, ROW_HIGHT*0);
   display.print(hours);
   display.print(":");
   display.print(minutes);
   display.print(":");
   display.print(remainingSeconds);
 
+  display.setCursor(0, ROW_HIGHT*1);
+  display.print("Semana:");
+  week++;
+  display.print(week);
+
 
   uint8_t hoursCountdown = secondsCountdown / 3600;
   uint8_t minutesCountdown = (secondsCountdown % 3600) / 60;
   uint8_t remainingSecondsCountdown = secondsCountdown % 60;
 
-  display.setCursor(0, ROW_3);
-  display.print("Restante: ");
+  display.setCursor(0, ROW_HIGHT*4);
+  display.print("Envio en: ");
   display.print(hoursCountdown);
   display.print(":");
   display.print(minutesCountdown);
   display.print(":");
   display.print(remainingSecondsCountdown);
 
-  display.setCursor(LETTER_LEN*7, ROW_8);
+  display.setCursor((LETTER_LEN*8)+3, ROW_HIGHT*7);
   display.print("Menu");
   display.display();
 }
@@ -73,19 +74,23 @@ void showMainScreen(uint16_t secondsCountdown, uint32_t seconds, uint8_t day, ui
 void showButtonsOnScreen(uint8_t buttonText){
   display.setTextColor(SSD1306_WHITE);
   
-  display.drawLine(0, 50, 30, 50, SSD1306_WHITE);
-  display.drawLine(30, 50, 30, 64, SSD1306_WHITE);
-
-  display.setCursor(0, ROW_8);
+  display.drawLine(0, 50, 25, 50, SSD1306_WHITE);
+  display.drawLine(25, 50, 25, 64, SSD1306_WHITE);
+  display.drawLine(0, 50, 0, 64, SSD1306_WHITE);
+  display.setCursor(1, ROW_HIGHT*7);
   display.print("<--");
 
-  display.setCursor(50, ROW_8);
+  
+  display.setCursor(LETTER_LEN*7, ROW_HIGHT*7);
   if (buttonText == CHOOSE)
     display.print("Elegir");
   else if(buttonText == CHANGE)
     display.print("Cambiar");
 
-  display.setCursor(113, ROW_8);
+  display.drawLine(100, 50, 127, 50, SSD1306_WHITE);
+  display.drawLine(127, 50, 127, 64, SSD1306_WHITE);
+  display.drawLine(100, 50, 100, 64, SSD1306_WHITE);
+  display.setCursor((LETTER_LEN*18)-1, ROW_HIGHT*7);
   display.print("-->");
 
   display.display();

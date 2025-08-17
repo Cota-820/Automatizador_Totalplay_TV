@@ -4,6 +4,9 @@
 #include <Arduino.h>
 #include "config.h"
 
+#define WAIT_LONG_PRESS_MS 1000
+#define BUTTON_AUTOCLICK_MS 100
+
 struct Button {
   uint8_t pin;
   bool currentState;

@@ -15,15 +15,6 @@
 #define SCREEN_HEIGHT 64
 #define OLED_ADDRESS 0x3C
 
-#define ROW_1 0
-#define ROW_2 8
-#define ROW_3 16
-#define ROW_4 24
-#define ROW_5 32
-#define ROW_6 40
-#define ROW_7 48
-#define ROW_8 56
-
 #define ROW_HIGHT 8
 #define LETTER_LEN 6
 

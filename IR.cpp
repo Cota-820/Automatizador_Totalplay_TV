@@ -24,12 +24,17 @@ void initChannels(){
   }
 }
 
-void saveChannels(uint8_t week, uint16_t channels_array[]){
-  if (week >= WEEKS) return;
-
-  memcpy(channels[week], channels_array, MAX_CHANNELS * sizeof(uint16_t));
-
+void saveChannels(uint16_t newChannels[WEEKS][MAX_CHANNELS]){
+  for (int i = 0; i < WEEKS; i++) 
+    for (int j = 0; j < MAX_CHANNELS; j++)
+      channels[i][j] = newChannels[i][j];
   preferences.putBytes("channel", channels, sizeof(channels));
+}
+
+void getChannels(uint16_t channelsCopy[WEEKS][MAX_CHANNELS]) {
+  for (int i = 0; i < WEEKS; i++)
+    for (int j = 0; j < MAX_CHANNELS; j++) 
+      channelsCopy[i][j] = channels[i][j];
 }
 
 void stopSuspension(){

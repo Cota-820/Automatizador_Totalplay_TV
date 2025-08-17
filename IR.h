@@ -29,7 +29,8 @@
 #define WEEKS 4
 
 void initChannels();
-void saveChannels(uint8_t week, uint16_t channels_array[]);
+void saveChannels(uint16_t newChannels[WEEKS][MAX_CHANNELS]);
+void getChannels(uint16_t channelsCopy[WEEKS][MAX_CHANNELS]);
 void stopSuspension();
 uint8_t getNumCommd(uint8_t digit);
 void sendSignal(uint16_t address, uint8_t command, char *signalName, int msToWait);
