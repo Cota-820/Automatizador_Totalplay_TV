@@ -20,13 +20,13 @@ MenuPositions menu_1_1_positions[] = {{LETTER_LEN*2, ROW_HIGHT*0},
                                       {LETTER_LEN*7, ROW_HIGHT*3},
                                       {(LETTER_LEN*6)+3, ROW_HIGHT*4}};
 
-MenuPositions menu_2_1_positions[] = {{LETTER_LEN*0, ROW_HIGHT*1},
-                                      {LETTER_LEN*7, ROW_HIGHT*1},
-                                      {LETTER_LEN*14, ROW_HIGHT*1},
-                                      {LETTER_LEN*4, ROW_HIGHT*2},
-                                      {LETTER_LEN*13, ROW_HIGHT*2},
-                                      {LETTER_LEN*4, ROW_HIGHT*3},
-                                      {LETTER_LEN*13, ROW_HIGHT*3},
+MenuPositions menu_2_1_positions[] = {{(LETTER_LEN*2)+3, ROW_HIGHT*0},
+                                      {LETTER_LEN*13, ROW_HIGHT*0},
+                                      {LETTER_LEN*6, ROW_HIGHT*1},
+                                      {LETTER_LEN*2, ROW_HIGHT*2},
+                                      {LETTER_LEN*12, ROW_HIGHT*2},
+                                      {LETTER_LEN*2, ROW_HIGHT*3},
+                                      {LETTER_LEN*12, ROW_HIGHT*3},
                                       {LETTER_LEN*6, ROW_HIGHT*5}};
 
 MenuPositions menu_2_2_positions[] = {{LETTER_LEN*10, ROW_HIGHT*1},
