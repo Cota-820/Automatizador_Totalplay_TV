@@ -11,7 +11,7 @@ Este programa automatiza el envío de señales infrarrojas, las mismas enviadas 
 - Led ir333-a
 - Resistencia 100 Ω (220 Ω si no se utilizara Transistor)
 - Transistor 2N2222
-- Pantalla SSD1306 128x64
+- Pantalla SSD1306 128x64px
 
 # Características
 El programa cuenta con varias funciones que pueden ser configuradas:
