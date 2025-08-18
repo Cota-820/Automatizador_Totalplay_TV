@@ -22,9 +22,11 @@ El programa cuenta con varias funciones que pueden ser configuradas:
 - Los datos se guardan en memoria no volátil(no se pierde al apagar el dispositivo), a excepción de minutos y segundos.
 
   # Cómo utilizar
-Clona el proyecto y abrelo en el entorno de Arduino. Contar con las siguientes librerías:
+Clona el proyecto y abrelo en el entorno de Arduino. 
+Librerías requeridas:
 - Adafruit-GFX-Library
 - Adafruit_SSD1306
-- IRremote
+- IRremote. 
+
 Se pueden cambiar las configuración por defecto del programa en el archivo "config.h".
 El diagrama eléctrico se encuentra en "imagenes/diagrama.png". Es recomendable conectar el led al transistor y no directamente al GPIO, esto para tener una mayor corriente. Una vez armado y cargado es recomendable dejarlo enfrente del decodificador o en un lugar donde el receptor pueda leer las señales del LED.
