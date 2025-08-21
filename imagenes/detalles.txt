@@ -1,0 +1,1 @@
+Este diagrama utiliza el esp32-DevKitC, pero cualquier variante de ESP32-WROOM debe funcionar.
