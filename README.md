@@ -9,6 +9,7 @@ Este programa automatiza el envío de señales infrarrojas, las mismas enviadas 
 # Hardware Utilizado
 - ESP32-DevKitC (o placa generica)
 - Led ir333-a
+- 4 push buttons
 - Resistencia 100 Ω (220 Ω si no se utilizara Transistor)
 - Transistor 2N2222
 - Pantalla SSD1306 128x64px
