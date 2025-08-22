@@ -22,18 +22,20 @@ El programa cuenta con las siguientes funciones, unas de las cuales son configur
 - Configuración para canales de cada día.
 - Los datos se guardan en memoria no volátil (no se pierde al apagar el dispositivo), a excepción de minutos y segundos.
 
-  # Instalación y Uso
+# Instalación y Uso
 Clona el proyecto y abrelo en el entorno de Arduino.  
 Librerías requeridas:
 - [Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library)
 - [Adafruit_SSD1306](https://github.com/adafruit/Adafruit_SSD1306)
 - [IRremote](https://github.com/Arduino-IRremote/Arduino-IRremote)   
 
-Se pueden cambiar las configuración por defecto del programa en el archivo "config.h". Las cuales son:
+Se pueden cambiar las configuración del programa en el archivo "config.h". Las cuales son:
 - Pines para los componentes.
 - Canales por defecto de cada dia. 
  
 El ejemplo del diagrama eléctrico se encuentra en "imagenes/diagrama.PNG". Es recomendable conectar el led al transistor y no directamente al GPIO, esto para tener una mayor corriente e iluminación. Si deseas conectarlo al GPIO, usa una resistencia de 220 Ω.   
-Una vez que se tenga corriendo apropiadamente, es conveniente dejarlo enfrente del decodificador o en un lugar donde el receptor pueda leer las señales del LED. 
+Una vez que se tenga corriendo apropiadamente, es conveniente dejarlo enfrente del decodificador o en un lugar donde el receptor pueda leer las señales del LED.  
+
+Existe una version mas simple de este proyecto que utiliza el Arduino Nano en este repositorio: [Automatizador_Totalplay_TV_Simple](https://github.com/Cota-820/Automatizador_Totalplay_TV_Simple/tree/main)
 
 "Este proyecto no está afiliado a Totalplay. Úsalo bajo tu propia responsabilidad”.
