@@ -1,4 +1,4 @@
-#ifndef MENU_h
+#ifndef MENU_H
 #define MENU_H
 
 #include "nvs_flash.h"

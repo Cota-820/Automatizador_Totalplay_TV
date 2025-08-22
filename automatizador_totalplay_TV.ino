@@ -7,7 +7,7 @@
 #include "string.h"
 
 #define COUNTDOWN_MS_TO_WAIT 1000
-#define MENU_MS_TO_WAIT 60000 //wip
+#define MENU_MS_TO_WAIT 60000
 
 enum state{
   STATE_COUNTDOWN,
@@ -32,7 +32,7 @@ void setup() {
 
   initDisplay(BUILD_IN_LED);  
 
-  delay(1000); //TEMP
+  delay(1000);
 }
 
 void loop() {

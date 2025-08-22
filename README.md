@@ -15,12 +15,12 @@ Este programa automatiza el envío de señales infrarrojas, las mismas enviadas 
 - Pantalla SSD1306 128x64px
 
 # Características
-El programa cuenta con varias funciones que pueden ser configuradas:
+El programa cuenta con las siguientes funciones, unas de las cuales son configurables en ejecucion:
 - Un botón para el envío manual de la señal y otros 3 para la manipulación de menú.
 - Muestra el tiempo para el siguiente envío de señal.
 - Muestra día y hora.
 - Configuración para canales de cada día.
-- Los datos se guardan en memoria no volátil(no se pierde al apagar el dispositivo), a excepción de minutos y segundos.
+- Los datos se guardan en memoria no volátil (no se pierde al apagar el dispositivo), a excepción de minutos y segundos.
 
   # Instalación y Uso
 Clona el proyecto y abrelo en el entorno de Arduino.  
